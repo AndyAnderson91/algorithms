@@ -1,6 +1,6 @@
 def binary_search_iterative(arr, k):
     """
-    Binary search through while loop.
+    Iterative version.
     """
     if not arr:
         return None
