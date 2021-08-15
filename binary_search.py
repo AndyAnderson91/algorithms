@@ -1,6 +1,10 @@
-def binary_search(arr, k):
+def binary_search_iterative(arr, k):
+    """
+    Binary search through while loop.
+    """
     if not arr:
         return None
+
     start = 0
     end = len(arr) - 1
 
