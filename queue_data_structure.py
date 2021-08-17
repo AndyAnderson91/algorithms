@@ -23,7 +23,7 @@ class Queue:
         """
         return not bool(self.first)
 
-    def push(self, data):
+    def enqueue(self, data):
         """
         Adds element in the end of Queue.
         """
@@ -36,7 +36,7 @@ class Queue:
 
         self.last = new_node
 
-    def pop(self):
+    def dequeue(self):
         """
         Removes element from the beginning of Queue and returns it.
         If Queue is empty, IndexError is raised.
@@ -59,14 +59,14 @@ class Queue:
 
         return node_to_pop
 
-    def peek_first(self):
+    def front(self):
         """
         Returns first element of Queue.
         Returns None if Queue is empty.
         """
         return self.first
 
-    def peek_last(self):
+    def rear(self):
         """
         Returns last element of Queue.
         Returns None if Queue is empty.
