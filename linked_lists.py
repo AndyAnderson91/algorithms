@@ -59,8 +59,8 @@ class SinglyLinkedList:
         """
         Basically behaves the same as dict.get() in python.
         Returns node by required index.
-        Returns None if node with required index doesn't exist.
         Positive, zero and negative indexes are supported.
+        Returns None if node with required index doesn't exist.
         """
         # Checks if index is out of range.
         if not (-self.length <= index <= self.length - 1):
@@ -79,21 +79,20 @@ class SinglyLinkedList:
 
     def add(self, data, index=0):
         """
-        Basically behaves the same as list.insert() in python with
-        only positive and zero indexes supported.
-        By default - with no index provided,
-        new element will be added in the front of the list.
-        For example, if current Singly Linked List contains 3 elements,
-        available indexes to add new node are:
-        0 - new node is added in the front of the list.
-        1, 2 - new node is inserted on a given position. Being there node is moved to the 'next'.
-        3 - new node is added to the end of the list.
-        Other indexes will raise IndexError.
+        Basically behaves the same as list.insert() in python.
+        Inserts element before index.
+        Positive, zero and negative indexes are supported.
+        If no index is provided, new element is added in the front of the list.
         """
-        if index < 0:
-            raise IndexError('Negative indexes are not supported in add method.')
-        elif index > self.length:
-            raise IndexError('List index out of range')
+        # If index is bigger than length of the list, element is added in the end.
+        if index > self.length:
+            index = self.length
+        # Negative index which is in range converts to positive.
+        elif -self.length < index < 0:
+            index = self.length + index
+        # if index is less than -length of the list, element is added at the front.
+        elif index <= -self.length:
+            index = 0
 
         # None if there is no next node.
         next_node = self.get(index)
@@ -105,7 +104,7 @@ class SinglyLinkedList:
         if index == 0:
             self.first = new_node
 
-        # Otherwise overwrites 'next' link of previous element.
+        # Otherwise overwrites 'next' link of the previous element.
         else:
             prev_node = self.get(index - 1)
             prev_node.next = new_node
@@ -116,9 +115,9 @@ class SinglyLinkedList:
         """
         Basically behaves the same as list.pop() in python.
         Removes the node at required index from the list and returns it.
-        If index is not provided, first element will be removed and returned.
         Positive, zero and negative indexes are supported.
         If node with required index doesn't exist, IndexError will be raised.
+        If index is not provided, first element will be removed and returned.
         """
         if self.length == 0:
             raise IndexError('List is empty.')
@@ -201,8 +200,8 @@ class DoublyLinkedList:
         """
         Basically behaves the same as dict.get() in python.
         Returns node by required index.
-        Returns None if node with required index doesn't exist.
         Positive, zero and negative indexes are supported.
+        Returns None if node with required index doesn't exist.
         If index is closer to the start, list traversal is going from the first node,
         otherwise it's going from the last node.
         """
@@ -230,21 +229,20 @@ class DoublyLinkedList:
 
     def add(self, data, index=0):
         """
-        Basically behaves the same as list.insert() in python with
-        only positive and zero indexes supported.
-        By default - with no index provided,
-        new element will be added in the front of the list.
-        For example, if current Double Linked List contains 3 elements,
-        available indexes to add new node are:
-        0 - new node is inserted in the front of the list.
-        1, 2 - node is inserted in a given position. Being there node is moved to 'next'.
-        3 - new node is inserted to the end of the list.
-        Other indexes will raise IndexError.
+        Basically behaves the same as list.insert() in python.
+        Inserts element before index.
+        Positive, zero and negative indexes are supported.
+        If no index is provided, new element is added in the front of the list.
         """
-        if index < 0:
-            raise IndexError('Negative indexes are not supported in add method.')
-        elif not (0 <= index <= self.length):
-            raise IndexError('Index is out of range')
+        # If index is bigger than length of the list, element is added in the end.
+        if index > self.length:
+            index = self.length
+        # Negative index which is in range converts to positive.
+        elif -self.length < index < 0:
+            index = self.length + index
+        # if index is less than -length of the list, element is added at the front.
+        elif index <= -self.length:
+            index = 0
 
         # Checks if new node is added to the end of the list.
         if index == self.length:
@@ -277,9 +275,9 @@ class DoublyLinkedList:
         """
         Basically behaves the same as list.pop() in python.
         Removes the node at required index from the list and returns it.
-        If index is not provided, first element will be removed and returned.
         Positive, zero and negative indexes are supported.
         If node with required index doesn't exist, IndexError will be raised.
+        If index is not provided, first element will be removed and returned.
         """
         if self.length == 0:
             raise IndexError('List is empty.')
