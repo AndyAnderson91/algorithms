@@ -1,63 +1,44 @@
-class Queue:
-    """
-    Implemented as a particular case of Doubly Linked List.
-    """
-    class Node:
-        """
-        Queue element.
-        Contains data and links to the next and previous elements.
-        """
-        def __init__(self, data, next=None, prev=None):
-            self.data = data
-            self.next = next
-            self.prev = prev
+from linked_lists import DoublyLinkedList
 
-    def __init__(self, first=None, last=None):
-        # Contains links to the first and last elements.
-        self.first = first
-        self.last = last
+
+class Queue(DoublyLinkedList):
+    """
+    Queue can be considered as a special case of DoublyLinkedList.
+    Inherited methods: __init__, __iter__, get.
+    Overridden methods: __repr__, add, pop.
+    New methods: is_empty, front, rear.
+    """
+    def __repr__(self):
+        """
+        String representation of all nodes in Queue.
+        """
+        nodes = []
+        for node in self:
+            nodes.append(str(node))
+        # Arrow shows on the front of the Queue.
+        return '«' + ' <-- '.join(nodes) + '»'
+
+    def add(self, data):
+        """
+        Adds element to the end of Queue.
+        """
+        super().add(data, self.length)
+
+    def pop(self):
+        """
+        Removes first element from Queue and returns it.
+        If Queue is empty, IndexError is raised.
+        """
+        if not self.first:
+            raise IndexError('Empty Queue')
+
+        return super().pop(0)
 
     def is_empty(self):
         """
         Returns True if Queue is empty, False otherwise.
         """
         return not bool(self.first)
-
-    def enqueue(self, data):
-        """
-        Adds element in the end of Queue.
-        """
-        new_node = self.Node(data, None, self.last)
-
-        if self.last:
-            self.last.next = new_node
-        else:
-            self.first = new_node
-
-        self.last = new_node
-
-    def dequeue(self):
-        """
-        Removes element from the beginning of Queue and returns it.
-        If Queue is empty, IndexError is raised.
-        """
-        if not self.first:
-            raise IndexError('Empty Queue')
-
-        node_to_pop = self.first
-        # Defines new first element of Queue.
-        # None if node_to_pop was only one in Queue.
-        self.first = node_to_pop.next
-
-        if self.first:
-            # Means Queue still not empty.
-            # Sets prev link of the new first element to None.
-            self.first.prev = None
-        else:
-            # Means Queue is empty. Sets last link to None.
-            self.last = None
-
-        return node_to_pop
 
     def front(self):
         """
