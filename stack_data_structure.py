@@ -1,48 +1,101 @@
-from linked_lists import SinglyLinkedList
-
-
-class Stack(SinglyLinkedList):
+class Stack:
     """
-    Stack can be considered as a special case of SinglyLinkedList.
-    Inherited methods: __init__, __iter__, get.
-    Overridden methods: __repr__, add, pop.
-    New methods: is_empty, peek.
+    Linear collection of elements built on the LIFO (last in - first out) principle.
+    Supported methods: __init__, __iter__, __contains__, __len__, __repr__, push, pop, is_empty, peek.
     """
+
+    class Node:
+        """
+        singly linked list element.
+        Supported methods: __init__, __repr__.
+        """
+
+        def __init__(self, data, next_node=None):
+            """
+            Contains data and link to the next node.
+            """
+            self.data = data
+            self.next = next_node
+
+        def __repr__(self):
+            """
+            String representation of contained data.
+            """
+            return "'{}'".format(self.data) if isinstance(self.data, str) else str(self.data)
+
+    def __init__(self):
+        """
+        Contains it's length and link to the first element. Created empty.
+        """
+        self.top = None
+        self._length = 0
+
+    def __iter__(self):
+        """
+        Traversal implementation.
+        """
+        cur_node = self.top
+        while cur_node:
+            yield cur_node
+            cur_node = cur_node.next
+
+    def __contains__(self, item):
+        """
+        Returns True if item in stack. Otherwise False.
+        """
+        for node in self:
+            if node.data == item:
+                return True
+
+        return False
+
+    def __len__(self):
+        """
+        Returns number of nodes.
+        """
+        return self._length
+
     def __repr__(self):
         """
-        String representation of all nodes in Queue.
+        String representation of all nodes in the SinglyLinkedList.
         """
-        nodes = []
+        nodes_str = []
         for node in self:
-            nodes.append(str(node))
-        # Arrow shows on element to be taken via 'pop' next.
-        return '«' + ' <-- '.join(nodes) + '»'
+            node_str = "'{}'".format(node.data) if isinstance(node.data, str) else str(node.data)
+            nodes_str.append(node_str)
 
-    def add(self, data):
+        return '«' + ' <-- '.join(nodes_str) + '»'
+
+    def push(self, data):
         """
-        Adds element on the top of the Stack.
+        Adds element on the top of the stack.
         """
-        super().add(data, 0)
+        self.top = self.Node(data, self.top)
+        self._length += 1
 
     def pop(self):
         """
-        Removes top element from the Stack and returns it.
+        Removes top element from the stack and returns it.
         If stack is empty, IndexError is raised.
         """
-        if not self.first:
-            raise IndexError('Empty Stack')
+        if not self.top:
+            raise IndexError('Empty stack')
 
-        return super().pop(0)
+        node_to_remove = self.top
+        self.top = node_to_remove.next
+        self._length -= 1
+
+        return node_to_remove
 
     def is_empty(self):
         """
         Returns True if Stack is empty, False otherwise.
         """
-        return not bool(self.first)
+        return not bool(self.top)
 
     def peek(self):
         """
         Returns top element of the Stack without removing it.
-        Returns None if Stack is empty
+        Returns None if Stack is empty.
         """
-        return self.first
+        return self.top
