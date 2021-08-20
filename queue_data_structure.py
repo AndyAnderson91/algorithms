@@ -22,13 +22,21 @@ class Queue:
             """
             return "'{}'".format(self.data) if isinstance(self.data, str) else str(self.data)
 
-    def __init__(self):
+    def __init__(self, iterable=()):
         """
         Contains its length and links to the first and last elements.
+        If iterable is provided, adds elements to the queue in a given order,
+        means first element in iterable becomes first in queue.
+        For example, ('a', 'b', 'c') will be added as 'a' <-- 'b' <-- 'c'.
+        Raises TypeError if non-iterable object is provided.
         """
         self.first = None
         self.last = None
         self._length = 0
+
+        if iter(iterable):
+            for element in iterable:
+                self.enqueue(element)
 
     def __iter__(self):
         """

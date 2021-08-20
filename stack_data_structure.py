@@ -23,12 +23,20 @@ class Stack:
             """
             return "'{}'".format(self.data) if isinstance(self.data, str) else str(self.data)
 
-    def __init__(self):
+    def __init__(self, iterable=()):
         """
-        Contains it's length and link to the first element. Created empty.
+        Contains it's length and link to the top element.
+        If iterable is provided, adds elements to the stack in a given order,
+        means last element in iterable becomes top element of the stack:
+        For example, ('a', 'b', 'c') will be added as 'c' <-- 'b' <-- 'a'.
+        Raises TypeError if non-iterable object is provided.
         """
         self.top = None
         self._length = 0
+
+        if iter(iterable):
+            for element in iterable:
+                self.push(element)
 
     def __iter__(self):
         """

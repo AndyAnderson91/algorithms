@@ -31,12 +31,19 @@ class SinglyLinkedList:
             """
             return "'{}'".format(self.data) if isinstance(self.data, str) else str(self.data)
 
-    def __init__(self):
+    def __init__(self, iterable=()):
         """
-        Contains it's length and link to the first element. Created empty.
+        Contains it's length and link to the first element.
+        If iterable is provided, adds elements to the list in a given order.
+        Means ('a', 'b', 'c') will be added as 'a' --> 'b' --> 'c'.
+        Raises TypeError if non-iterable object is provided.
         """
         self.first = None
         self._length = 0
+
+        if iter(iterable):
+            for i in range(len(iterable) - 1, -1, -1):
+                self.insert(iterable[i], 0)
 
     def __iter__(self):
         """
@@ -217,13 +224,20 @@ class DoublyLinkedList:
             """
             return "'{}'".format(self.data) if isinstance(self.data, str) else str(self.data)
 
-    def __init__(self):
+    def __init__(self, iterable=()):
         """
-        Contains its length and links to the first and last elements.
+        Contains it's length and link to the first and last elements.
+        If iterable is provided, adds elements to the list in a given order.
+        Means ('a', 'b', 'c') will be added as 'a' --> 'b' --> 'c'.
+        Raises TypeError if non-iterable object is provided.
         """
         self.first = None
         self.last = None
         self._length = 0
+
+        if iter(iterable):
+            for i in range(len(iterable) - 1, -1, -1):
+                self.insert(iterable[i], 0)
 
     def __iter__(self):
         """
