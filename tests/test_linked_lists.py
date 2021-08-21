@@ -19,6 +19,18 @@ def create_singly_and_doubly_linked_lists_test_cases(linked_list_class):
             self.length = len(self.elements)
             self.out_of_range_indexes = [i for i in range(-self.length - 5, self.length + 6) if abs(i) > self.length]
 
+        def test_create_linked_list_with_not_iterable_argument(self):
+            """
+            Checks if TypeError is raised if argument is not iterable.
+            """
+            self.assertRaises(TypeError, linked_list_class, 12345)
+
+        def test_create_linked_list_with_iterable_argument(self):
+            """
+            Checks if __init__ method implemented correctly.
+            """
+            self.assertEqual(len(linked_list_class([1, 2, 3, 4, 5])), 5)
+
         def test_empty_list_repr(self):
             """
             Checks if empty list representation is correct.
@@ -190,7 +202,7 @@ def create_singly_and_doubly_linked_lists_test_cases(linked_list_class):
 
         def test_pop_by_index_out_of_range(self):
             """
-            Checks if IndexError is raised if pop method recieves index out of range.
+            Checks if IndexError is raised if pop method receives index out of range.
             """
             self.linked_list = linked_list_class(self.elements)
             for i in self.out_of_range_indexes:
