@@ -42,8 +42,8 @@ def create_singly_and_doubly_linked_lists_test_cases(linked_list_class):
             Checks if __iter__ method implemented correctly.
             """
             self.linked_list = linked_list_class(self.elements)
-            for j, node in enumerate(self.linked_list):
-                self.assertEqual(node.data, self.elements[j])
+            for j, node_data in enumerate(self.linked_list):
+                self.assertEqual(node_data, self.elements[j])
 
         def test_contains(self):
             """
@@ -66,7 +66,7 @@ def create_singly_and_doubly_linked_lists_test_cases(linked_list_class):
             """
             self.linked_list = linked_list_class(self.elements)
             for i in range(self.length):
-                self.assertEqual(self.linked_list[i].data, self.elements[i])
+                self.assertEqual(self.linked_list[i], self.elements[i])
 
         def test_getitem_by_index_out_of_range(self):
             """
@@ -83,7 +83,7 @@ def create_singly_and_doubly_linked_lists_test_cases(linked_list_class):
             self.linked_list = linked_list_class(self.elements)
             for i in range(self.length):
                 self.linked_list[i] = 'New data'
-                self.assertEqual(self.linked_list[i].data, 'New data')
+                self.assertEqual(self.linked_list[i], 'New data')
 
         def test_setitem_by_index_out_of_range(self):
             """
@@ -118,7 +118,7 @@ def create_singly_and_doubly_linked_lists_test_cases(linked_list_class):
             self.linked_list = linked_list_class(self.elements)
             for pos_index in range(1, self.length):
                 self.linked_list.insert('e', pos_index)
-                self.assertEqual(self.linked_list.get(pos_index-1).next.data, 'e')
+                self.assertEqual(self.linked_list._get_node(pos_index-1).next.data, 'e')
                 self.linked_list.pop(pos_index)
 
         def test_insert_by_positive_index_out_of_range(self):
@@ -128,7 +128,7 @@ def create_singly_and_doubly_linked_lists_test_cases(linked_list_class):
             self.linked_list = linked_list_class(self.elements)
             for pos_index in range(self.length, self.length + 5):
                 self.linked_list.insert('e', pos_index)
-                self.assertEqual(self.linked_list.get(self.length - 1).next.data, 'e')
+                self.assertEqual(self.linked_list._get_node(self.length - 1).next.data, 'e')
                 self.linked_list.pop(self.length)
 
         def test_insert_by_zero_index(self):
@@ -146,7 +146,7 @@ def create_singly_and_doubly_linked_lists_test_cases(linked_list_class):
             self.linked_list = linked_list_class(self.elements)
             for neg_index in range(-self.length, 0):
                 self.linked_list.insert('e', neg_index)
-                self.assertEqual(self.linked_list.get(neg_index - 1).data, 'e')
+                self.assertEqual(self.linked_list.get(neg_index - 1), 'e')
                 self.linked_list.pop(neg_index - 1)
 
         def test_insert_by_negative_index_out_of_range(self):
@@ -165,15 +165,24 @@ def create_singly_and_doubly_linked_lists_test_cases(linked_list_class):
             """
             self.linked_list = linked_list_class(self.elements)
             for j in range(-self.length, self.length):
-                self.assertEqual(self.linked_list.get(j).data, self.elements[j])
+                self.assertEqual(self.linked_list.get(j), self.elements[j])
 
-        def test_get_by_index_out_of_range(self):
+        def test_get_by_index_out_of_range_without_default(self):
             """
-            Checks if get method returns None if required index is out of range.
+            Checks if get method returns None if required index is out of range and 'default' value is not given.
             """
             self.linked_list = linked_list_class(self.elements)
             for i in self.out_of_range_indexes:
                 self.assertIsNone(self.linked_list.get(i))
+
+        def test_get_by_index_out_of_range_with_default(self):
+            """
+            Checks if get method returns 'default' value if required index is out of range.
+            """
+            self.linked_list = linked_list_class(self.elements)
+            for i in self.out_of_range_indexes:
+                default = 'default №{}'.format(i)
+                self.assertEqual(self.linked_list.get(i, default), default)
 
         def test_pop_without_index(self):
             """
@@ -182,7 +191,7 @@ def create_singly_and_doubly_linked_lists_test_cases(linked_list_class):
             """
             self.linked_list = linked_list_class(self.elements)
             for j in range(self.length):
-                popped = self.linked_list.pop().data
+                popped = self.linked_list.pop()
                 self.assertEqual(popped, self.elements[j])
 
         def test_pop_by_index_in_range(self):
@@ -191,7 +200,7 @@ def create_singly_and_doubly_linked_lists_test_cases(linked_list_class):
             """
             self.linked_list = linked_list_class(self.elements)
             for j in range(-self.length, self.length):
-                popped = self.linked_list.pop(j).data
+                popped = self.linked_list.pop(j)
                 self.assertEqual(popped, self.elements[j])
                 if j >= 0:
                     self.linked_list.insert(popped, j)
@@ -227,8 +236,8 @@ class SinglyLinkedListTestCase(create_singly_and_doubly_linked_lists_test_cases(
         self.linked_list = SinglyLinkedList(self.elements)
         self.linked_list.add('Hello')
         updated_elements = ('Hello',) + self.elements
-        for i, node in enumerate(self.linked_list):
-            self.assertEqual(node.data, updated_elements[i])
+        for i, node_data in enumerate(self.linked_list):
+            self.assertEqual(node_data, updated_elements[i])
 
 
 class DoublyLinkedListTestCase(create_singly_and_doubly_linked_lists_test_cases(DoublyLinkedList)):
@@ -247,8 +256,8 @@ class DoublyLinkedListTestCase(create_singly_and_doubly_linked_lists_test_cases(
         self.linked_list = DoublyLinkedList(self.elements)
         self.linked_list.add('Hello')
         updated_elements = self.elements + ('Hello',)
-        for i, node in enumerate(self.linked_list):
-            self.assertEqual(node.data, updated_elements[i])
+        for i, node_data in enumerate(self.linked_list):
+            self.assertEqual(node_data, updated_elements[i])
 
 
 if __name__ == '__main__':

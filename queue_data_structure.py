@@ -6,7 +6,7 @@ class Queue:
 
     class Node:
         """
-        doubly linked list element.
+        Queue element.
         """
         def __init__(self, data, prev_node=None, next_node=None):
             """
@@ -15,12 +15,6 @@ class Queue:
             self.data = data
             self.prev = prev_node
             self.next = next_node
-
-        def __repr__(self):
-            """
-            String representation of contained data.
-            """
-            return "'{}'".format(self.data) if isinstance(self.data, str) else str(self.data)
 
     def __init__(self, iterable=()):
         """
@@ -44,32 +38,32 @@ class Queue:
         """
         cur_node = self.first
         while cur_node:
-            yield cur_node
+            yield cur_node.data
             cur_node = cur_node.next
 
     def __contains__(self, item):
         """
-        Returns True if item in singly linked list. Otherwise False.
+        Returns True if item in Queue. Otherwise False.
         """
-        for node in self:
-            if node.data == item:
+        for node_data in self:
+            if node_data == item:
                 return True
 
         return False
 
     def __len__(self):
         """
-        Returns number of nodes.
+        Returns number of contained items.
         """
         return self._length
 
     def __repr__(self):
         """
-        String representation of all nodes in the DoublyLinkedList.
+        String representation of all nodes in the Queue.
         """
         nodes_str = []
-        for node in self:
-            node_str = "'{}'".format(node.data) if isinstance(node.data, str) else str(node.data)
+        for node_data in self:
+            node_str = "'{}'".format(node_data) if isinstance(node_data, str) else str(node_data)
             nodes_str.append(node_str)
 
         return '«' + ' <-- '.join(nodes_str) + '»'
@@ -92,7 +86,7 @@ class Queue:
 
     def dequeue(self):
         """
-        Removes front element from queue and returns it.
+        Removes front element from queue and returns it's data.
         If Queue is empty, IndexError is raised.
         """
         if not self.first:
@@ -112,7 +106,7 @@ class Queue:
 
         self._length -= 1
 
-        return node_to_remove
+        return node_to_remove.data
 
     def is_empty(self):
         """
@@ -122,14 +116,14 @@ class Queue:
 
     def front(self):
         """
-        Returns first element of Queue.
+        Returns first item of the Queue.
         Returns None if Queue is empty.
         """
-        return self.first
+        return self.first.data
 
     def rear(self):
         """
-        Returns last element of Queue.
+        Returns last item of the Queue.
         Returns None if Queue is empty.
         """
-        return self.last
+        return self.last.data

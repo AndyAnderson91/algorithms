@@ -27,15 +27,15 @@ class HashTable:
         """
         for cell in self.array:
             if cell is not None:
-                for node in cell:
-                    yield node.data[0]
+                for item in cell:
+                    yield item[0]
 
-    def __contains__(self, item):
+    def __contains__(self, required_key):
         """
         Returns True if key is in hash table. False otherwise.
         """
         for key in self:
-            if key == item:
+            if key == required_key:
                 return True
 
         return False
@@ -66,12 +66,12 @@ class HashTable:
         """
         index = self._hash(key)
 
-        # If cell isn't empty - looks for required key in cell nodes.
+        # If cell isn't empty - looks for required key in cell items.
         if self.array[index]:
-            for node in self.array[index]:
+            for item in self.array[index]:
                 # If required key is found, update it's value.
-                if node.data[0] == key:
-                    node.data[1] = value
+                if item[0] == key:
+                    item[1] = value
                     return
 
             # If key is not in singly linked list yet, adds (key, value) pair to it.
@@ -166,25 +166,25 @@ class HashTable:
         """
         return [(key, self[key]) for key in self]
 
-    def get(self, key):
+    def get(self, key, default=None):
         """
-        Behaves almost the same as dict.get()
+        Behaves the same as dict.get()
         Returns value by a given key.
-        If key is not in hash table, returns None.
+        If key is not in hash table, returns default (or None).
         """
         # Gets hash from key.
         index = self._hash(key)
 
         # Checks if array cell with hash index already contains data.
         if self.array[index]:
-            # if True - looks for required key in cell nodes.
-            for node in self.array[index]:
+            # if True - looks for required key in cell items.
+            for item in self.array[index]:
                 # If required key is found, returns it's value.
-                if node.data[0] == key:
-                    return node.data[1]
+                if item[0] == key:
+                    return item[1]
 
-        # If required key isn't found, returns None
-        return None
+        # If required key isn't found, returns default.
+        return default
 
     def add(self, key, value):
         """
@@ -198,9 +198,9 @@ class HashTable:
         # If True - Collision.
         if self.array[index]:
             # Checks if key already in singly linked list.
-            for node in self.array[index]:
+            for item in self.array[index]:
                 # Raises KeyError if True.
-                if node.data[0] == key:
+                if item[0] == key:
                     raise KeyError('Item with this key already exists')
 
             # If key is not in singly linked list yet, adds (key, value) pair to it.
@@ -227,11 +227,11 @@ class HashTable:
 
         # Checks if array cell with hash index contains data.
         if self.array[index]:
-            # If True, looks for required key in cell nodes.
-            for i, node in enumerate(self.array[index]):
+            # If True, looks for required key in cell items.
+            for i, item in enumerate(self.array[index]):
                 # If required key is found, removes (key, value) from the hash table, and returns value
-                if node.data[0] == key:
-                    value = self.array[index].pop(i).data[1]
+                if item[0] == key:
+                    value = self.array[index].pop(i)[1]
 
                     # If singly linked list is empty after popping required node,
                     # overwrites cell value to None.

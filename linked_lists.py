@@ -6,18 +6,16 @@ SinglyLinkedList and DoublyLinkedList.
 
 class SinglyLinkedList:
     """
-    Linear collection of elements where each element points to the next one.
+    Linear collection of elements where each element(node) points to the next one.
     If there is no next element, it points to None.
     Supported methods: __init__, __iter__, __contains__, __repr__, __len__,
-    __getitem__, __setitem__, get, add, insert, pop.
+    __getitem__, __setitem__, _get_node, get, add, insert, pop.
     """
 
     class Node:
         """
         SinglyLinkedList element.
-        Supported methods: __init__, __repr__.
         """
-
         def __init__(self, data, next_node=None):
             """
             Contains data and link to the next node.
@@ -25,18 +23,12 @@ class SinglyLinkedList:
             self.data = data
             self.next = next_node
 
-        def __repr__(self):
-            """
-            String representation of contained data.
-            """
-            return "'{}'".format(self.data) if isinstance(self.data, str) else str(self.data)
-
     def __init__(self, iterable=()):
         """
         Contains it's length and link to the first element.
-        If iterable is provided, adds elements to the list in a given order.
+        If iterable argument is provided, adds elements to the list in a given order.
         Means ('a', 'b', 'c') will be added as 'a' --> 'b' --> 'c'.
-        Raises TypeError if non-iterable object is provided.
+        Raises TypeError if provided argument is not iterable.
         """
         self.first = None
         self._length = 0
@@ -51,15 +43,15 @@ class SinglyLinkedList:
         """
         cur_node = self.first
         while cur_node:
-            yield cur_node
+            yield cur_node.data
             cur_node = cur_node.next
 
     def __contains__(self, item):
         """
         Returns True if item in singly linked list. Otherwise False.
         """
-        for node in self:
-            if node.data == item:
+        for node_data in self:
+            if node_data == item:
                 return True
 
         return False
@@ -75,36 +67,36 @@ class SinglyLinkedList:
         Returns node by required index.
         Unlike get() method, raise IndexError if index is out of range.
         """
-        # Checks if index is out of range.
-        if not (-self._length <= index <= self._length - 1):
+        node = self._get_node(index)
+        if node is None:
             raise IndexError('List index is out of range')
         else:
-            return self.get(index)
+            return node.data
 
     def __setitem__(self, index, data):
         """
         Overwrites node with required index by provided data.
         If required index is out of range, raise IndexError if index is out of range.
         """
-        if not (-self._length <= index <= self._length - 1):
+        node = self._get_node(index)
+        if node is None:
             raise IndexError('List index is out of range')
         else:
-            self.get(index).data = data
+            self._get_node(index).data = data
 
     def __repr__(self):
         """
         String representation of all nodes in the SinglyLinkedList.
         """
         nodes_str = []
-        for node in self:
-            node_str = "'{}'".format(node.data) if isinstance(node.data, str) else str(node.data)
+        for node_data in self:
+            node_str = "'{}'".format(node_data) if isinstance(node_data, str) else str(node_data)
             nodes_str.append(node_str)
 
         return '«' + ' --> '.join(nodes_str) + '»'
 
-    def get(self, index):
+    def _get_node(self, index):
         """
-        Basically behaves the same as dict.get() in python.
         Returns node by required index.
         Positive, zero and negative indexes are supported.
         Returns None if node with required index doesn't exist.
@@ -123,6 +115,17 @@ class SinglyLinkedList:
             cur_node = cur_node.next
 
         return cur_node
+
+    def get(self, index, default=None):
+        """
+        Basically behaves the same as dict.get() in python.
+        Returns node.data by required index.
+        Positive, zero and negative indexes are supported.
+        Returns default (or None) if node with required index doesn't exist.
+        """
+        node = self._get_node(index)
+
+        return node.data if node is not None else default
 
     def add(self, data):
         """
@@ -149,7 +152,7 @@ class SinglyLinkedList:
             index = 0
 
         # None if there is no next node.
-        next_node = self.get(index)
+        next_node = self._get_node(index)
 
         new_node = self.Node(data, next_node)
 
@@ -160,7 +163,7 @@ class SinglyLinkedList:
 
         # Otherwise overwrites 'next' link of the previous element.
         else:
-            prev_node = self.get(index - 1)
+            prev_node = self._get_node(index - 1)
             prev_node.next = new_node
 
         self._length += 1
@@ -168,10 +171,10 @@ class SinglyLinkedList:
     def pop(self, index=0):
         """
         Basically behaves the same as list.pop() in python.
-        Removes the node at required index from the list and returns it.
+        Removes the node at required index from the list and returns it's data.
         Positive, zero and negative indexes are supported.
         If node with required index doesn't exist, IndexError will be raised.
-        If index is not provided, first element will be removed and returned.
+        If index is not provided, first node will be removed and it's data returned.
         """
         if self._length == 0:
             raise IndexError('List is empty.')
@@ -182,7 +185,7 @@ class SinglyLinkedList:
         if index < 0:
             index = index + self._length
 
-        node_to_remove = self.get(index)
+        node_to_remove = self._get_node(index)
 
         # If popped element is first, overwrites 'first' link of the SinglyLinkedList.
         if index == 0:
@@ -190,12 +193,12 @@ class SinglyLinkedList:
 
         # Otherwise overwrites 'next' link of previous element.
         else:
-            prev_node = self.get(index - 1)
+            prev_node = self._get_node(index - 1)
             prev_node.next = node_to_remove.next
 
         self._length -= 1
 
-        return node_to_remove
+        return node_to_remove.data
 
 
 class DoublyLinkedList:
@@ -203,7 +206,7 @@ class DoublyLinkedList:
     Linear collection of elements where each element points to the next and previous elements.
     If there is no next element, it points to None. Same about previous element.
     Supported methods: __init__, __iter__, __contains__, __repr__, __len__,
-    __getitem__, __setitem__, get, add, insert, pop.
+    __getitem__, __setitem__, _get_node, get, add, insert, pop.
     """
 
     class Node:
@@ -217,12 +220,6 @@ class DoublyLinkedList:
             self.data = data
             self.prev = prev_node
             self.next = next_node
-
-        def __repr__(self):
-            """
-            String representation of contained data.
-            """
-            return "'{}'".format(self.data) if isinstance(self.data, str) else str(self.data)
 
     def __init__(self, iterable=()):
         """
@@ -245,15 +242,15 @@ class DoublyLinkedList:
         """
         cur_node = self.first
         while cur_node:
-            yield cur_node
+            yield cur_node.data
             cur_node = cur_node.next
 
     def __contains__(self, item):
         """
         Returns True if item in singly linked list. Otherwise False.
         """
-        for node in self:
-            if node.data == item:
+        for node_data in self:
+            if node_data == item:
                 return True
 
         return False
@@ -269,36 +266,36 @@ class DoublyLinkedList:
         Returns node by required index.
         Unlike get() method, raise IndexError if index is out of range.
         """
-        # Checks if index is out of range.
-        if not (-self._length <= index <= self._length - 1):
+        node = self._get_node(index)
+        if node is None:
             raise IndexError('List index is out of range')
         else:
-            return self.get(index)
+            return node.data
 
     def __setitem__(self, index, data):
         """
         Overwrites node with required index by provided data.
         If required index is out of range, raise IndexError if index is out of range.
         """
-        if not (-self._length <= index <= self._length - 1):
+        node = self._get_node(index)
+        if node is None:
             raise IndexError('List index is out of range')
         else:
-            self.get(index).data = data
+            self._get_node(index).data = data
 
     def __repr__(self):
         """
         String representation of all nodes in the DoublyLinkedList.
         """
         nodes_str = []
-        for node in self:
-            node_str = "'{}'".format(node.data) if isinstance(node.data, str) else str(node.data)
+        for node_data in self:
+            node_str = "'{}'".format(node_data) if isinstance(node_data, str) else str(node_data)
             nodes_str.append(node_str)
 
         return '«' + ' <--> '.join(nodes_str) + '»'
 
-    def get(self, index):
+    def _get_node(self, index):
         """
-        Basically behaves the same as dict.get() in python.
         Returns node by required index.
         Positive, zero and negative indexes are supported.
         Returns None if node with required index doesn't exist.
@@ -326,6 +323,17 @@ class DoublyLinkedList:
                 cur_node = cur_node.prev
 
         return cur_node
+
+    def get(self, index, default=None):
+        """
+        Basically behaves the same as dict.get() in python.
+        Returns node.data by required index.
+        Positive, zero and negative indexes are supported.
+        Returns default (or None) if node with required index doesn't exist.
+        """
+        node = self._get_node(index)
+
+        return node.data if node is not None else default
 
     def add(self, data):
         """
@@ -362,7 +370,7 @@ class DoublyLinkedList:
 
         # Checks if new node is inserted to the end of the list.
         if index == self._length:
-            prev_node = self.get(index-1)
+            prev_node = self._get_node(index-1)
             new_node = self.Node(data, prev_node, None)
             self.last = new_node
             # Checks if previous node exists.
@@ -374,7 +382,7 @@ class DoublyLinkedList:
 
         # inserts node to any existing position.
         else:
-            next_node = self.get(index)
+            next_node = self._get_node(index)
             prev_node = next_node.prev
             new_node = self.Node(data, prev_node, next_node)
             next_node.prev = new_node
@@ -404,7 +412,7 @@ class DoublyLinkedList:
         if index < 0:
             index = index + self._length
 
-        node_to_remove = self.get(index)
+        node_to_remove = self._get_node(index)
 
         # Checks removed node has previous.
         if node_to_remove.prev:
@@ -421,4 +429,4 @@ class DoublyLinkedList:
 
         self._length -= 1
 
-        return node_to_remove
+        return node_to_remove.data
