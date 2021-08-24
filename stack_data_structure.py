@@ -19,8 +19,9 @@ class Stack:
         """
         Contains it's length and link to the top element.
         If iterable is provided, adds elements to the stack in a given order,
-        means last element in iterable becomes top element of the stack:
-        For example, ('a', 'b', 'c') will be added as 'a' --> 'b' --> 'c'.
+        means last element in iterable becomes top of the stack:
+        For example, ('a', 'b', 'c') will be added as «'a' -- 'b' -- 'c'»,
+        there 'c' is the top of the stack.
         Raises TypeError if non-iterable object is provided.
         """
         self.top = None
@@ -64,7 +65,7 @@ class Stack:
             node_str = "'{}'".format(node_data) if isinstance(node_data, str) else str(node_data)
             nodes_str.append(node_str)
 
-        return '«' + ' --> '.join(nodes_str) + '»'
+        return '«' + ' -- '.join(reversed(nodes_str)) + '»'
 
     def push(self, data):
         """
