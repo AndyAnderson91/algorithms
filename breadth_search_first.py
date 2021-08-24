@@ -12,10 +12,10 @@ def breadth_first_search(graph, start, finish=None):
     to every other vertex of the graph.
     If 'finish' is set, shortest path from starting vertex to finishing one will be returned.
     """
-    paths = {key: [start] for key in range(len(graph))}
+    paths = {vertex: [start] for vertex in range(len(graph))}
 
     # q - queue of vertices to process.
-    # visited - list of already processed vertices.
+    # visited - array of already processed vertices.
     q, visited = Queue([start]), [start]
 
     while q:
