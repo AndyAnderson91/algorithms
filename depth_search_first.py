@@ -25,3 +25,11 @@ def depth_first_search_recursive(graph, vertex, visited=None):
             depth_first_search_recursive(graph, neighbor, visited)
 
     return visited
+
+
+graph1 = [
+    [0, 6, 2, 0],
+    [6, 0, 3, 1],
+    [2, 3, 0, 5],
+    [0, 1, 5, 0]
+]
