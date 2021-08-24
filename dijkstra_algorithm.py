@@ -16,7 +16,6 @@ def dijkstra(adj_matrix, start, finish=None):
     unvisited, visited = {start}, set()
 
     while unvisited:
-        print(unvisited, visited)
         # At each iteration looks from parent vertex to it's child vertices and update their weights (if needed).
         # parent_vertex - is one with the minimum weight from all vertices in 'unvisited' array.
         parent_vertex = min(unvisited, key=lambda v_num: paths_weights[v_num])
