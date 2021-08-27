@@ -1,14 +1,14 @@
 class BSTNode:
-    def __init__(self, data, parent=None, left=None, right=None):
-        self.data = data
+    def __init__(self, value, parent=None, left=None, right=None):
+        self.value = value
         self.parent = parent
         self.left = left
         self.right = right
 
     def __repr__(self):
-        left = self.left.data if self.left else None
-        right = self.right.data if self.right else None
-        return '{0} <-- {1} --> {2}'.format(left, self.data, right)
+        left = self.left.value if self.left else None
+        right = self.right.value if self.right else None
+        return '{0} <-- {1} --> {2}'.format(left, self.value, right)
 
     def is_leaf(self):
         return not bool(self.left or self.right)
@@ -33,135 +33,128 @@ class BinarySearchTree:
     def __len__(self):
         return self._length
 
-    def __contains__(self, data):
-        return bool(self._get_node(data))
+    def __contains__(self, value):
+        return bool(self._get_node(value))
 
     def __repr__(self):
         return str(self.inorder())
 
-    def _build_binary_search_tree(self, values):
-        prepared = self._order_to_add(sorted(list(values)), 0, len(values)-1)
-        for value in prepared:
+    def _build_binary_search_tree(self, sorted_values):
+        prepared_values = self._prepare_values(sorted_values, 0, len(sorted_values)-1)
+        for value in prepared_values:
             self.add(value)
 
-    def _order_to_add(self, array, start, end):
+    def _prepare_values(self, array, start, end):
         if start > end:
             return []
 
         mid = (start + end) // 2
-        return [array[mid]] + self._order_to_add(array, start, mid - 1) + self._order_to_add(array, mid + 1, end)
+        return [array[mid]] + self._prepare_values(array, start, mid - 1) + self._prepare_values(array, mid + 1, end)
 
-    def _get_inordered_data(self, node, nodes):
+    def _get_inordered_values(self, node, values):
         if node:
             if node.left:
-                self._get_inordered_data(node.left, nodes)
-            nodes.append(node.data)
+                self._get_inordered_values(node.left, values)
+            values.append(node.value)
             if node.right:
-                self._get_inordered_data(node.right, nodes)
+                self._get_inordered_values(node.right, values)
 
-        return nodes
+        return values
 
-    def _get_node(self, data):
-        current = self.root
-        while current:
-            if data == current.data:
-                return current
+    def _get_node(self, value):
+        current_node = self.root
+        while current_node:
+            if value == current_node.value:
+                return current_node
 
-            current = current.left if data < current.data else current.right
+            current_node = current_node.left if value < current_node.value else current_node.right
 
     @staticmethod
     def _get_successor(node):
-        current = node.right
-        if current:
-            while current.left:
-                current = current.left
-        return current
+        current_node = node.right
+        if current_node:
+            while current_node.left:
+                current_node = current_node.left
+        return current_node
 
     def balance(self):
         sorted_values = self.inorder()
         self.root = None
         self._build_binary_search_tree(sorted_values)
 
-    def add(self, data):
-        if self.root is None:
-            self.root = BSTNode(data)
+    def add(self, value):
+        if not self.root:
+            self.root = BSTNode(value)
             self._length += 1
         else:
-            parent = self.root
-            while parent:
-                if data < parent.data and parent.left:
-                    parent = parent.left
-                elif data < parent.data and not parent.left:
-                    parent.left = BSTNode(data, parent)
+            parent_node = self.root
+            while parent_node:
+                if value < parent_node.value and parent_node.left:
+                    parent_node = parent_node.left
+                elif value < parent_node.value and not parent_node.left:
+                    parent_node.left = BSTNode(value, parent_node)
                     self._length += 1
                     return
-                elif data > parent.data and parent.right:
-                    parent = parent.right
-                elif data > parent.data and not parent.right:
-                    parent.right = BSTNode(data, parent)
+                elif value > parent_node.value and parent_node.right:
+                    parent_node = parent_node.right
+                elif value > parent_node.value and not parent_node.right:
+                    parent_node.right = BSTNode(value, parent_node)
                     self._length += 1
                     return
                 else:
-                    raise KeyError('No duplicates available')
+                    raise KeyError('Node with this value already exists')
 
-    def remove(self, data):
-        node_to_remove = self._get_node(data)
+    def remove(self, value):
+        node_to_remove = self._get_node(value)
 
         if not node_to_remove:
-            raise ValueError('{0} is not in binary search tree'.format(data))
+            raise ValueError('{0} is not in binary search tree'.format(value))
 
-        parent = node_to_remove.parent
+        parent_node = node_to_remove.parent
 
         if node_to_remove.is_leaf():
             if node_to_remove == self.root:
                 self.root = None
-            elif node_to_remove == parent.left:
-                parent.left = None
+            elif node_to_remove == parent_node.left:
+                parent_node.left = None
             else:
-                parent.right = None
+                parent_node.right = None
 
         elif node_to_remove.has_one_child_only():
-            child = node_to_remove.left if node_to_remove.left else node_to_remove.right
+            child_node = node_to_remove.left if node_to_remove.left else node_to_remove.right
             if node_to_remove == self.root:
-                self.root = child
-            elif node_to_remove == parent.left:
-                parent.left = child
+                self.root = child_node
+            elif node_to_remove == parent_node.left:
+                parent_node.left = child_node
             else:
-                parent.right = child
-            child.parent = parent
+                parent_node.right = child_node
+            child_node.parent = parent_node
 
         else:
-            successor = self._get_successor(node_to_remove)
-            self.remove(successor.data)
+            successor_node = self._get_successor(node_to_remove)
+            self.remove(successor_node.value)
 
             if node_to_remove == self.root:
-                self.root = successor
-            elif node_to_remove == parent.left:
-                parent.left = successor
+                self.root = successor_node
+            elif node_to_remove == parent_node.left:
+                parent_node.left = successor_node
             else:
-                parent.right = successor
+                parent_node.right = successor_node
 
-            successor.parent = parent
+            successor_node.parent = parent_node
 
-            successor.left = node_to_remove.left
-            if successor.left:
-                successor.left.parent = successor
+            successor_node.left = node_to_remove.left
+            if successor_node.left:
+                successor_node.left.parent = successor_node
 
-            successor.right = node_to_remove.right
-            if successor.right:
-                successor.right.parent = successor
+            successor_node.right = node_to_remove.right
+            if successor_node.right:
+                successor_node.right.parent = successor_node
 
-    def exists(self, data):
-        return bool(self._get_node(data))
+        self._length -= 1
+
+    def exists(self, value):
+        return bool(self._get_node(value))
 
     def inorder(self):
-        return self._get_inordered_data(self.root, [])
-
-
-arr = [2, 7, 8, 15, 16, 18, 21, 22, 22.5, 23, 24, 25, 26, 28, 30]
-
-b = BinarySearchTree(arr)
-b.remove(30)
-print(b.root.right.right)
-
-print(b.inorder())
+        return self._get_inordered_values(self.root, [])
