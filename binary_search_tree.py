@@ -39,17 +39,18 @@ class BinarySearchTree:
     def __repr__(self):
         return str(self.inorder())
 
-    def _build_binary_search_tree(self, sorted_values):
-        prepared_values = self._prepare_values(sorted_values, 0, len(sorted_values)-1)
-        for value in prepared_values:
-            self.add(value)
+    def _build_binary_search_tree(self, array, parent=None):
+        if array:
+            mid = len(array)//2
 
-    def _prepare_values(self, array, start, end):
-        if start > end:
-            return []
+            node = BSTNode(array[mid], parent)
+            if not self.root:
+                self.root = node
 
-        mid = (start + end) // 2
-        return [array[mid]] + self._prepare_values(array, start, mid - 1) + self._prepare_values(array, mid + 1, end)
+            node.left = self._build_binary_search_tree(array[:mid], node)
+            node.right = self._build_binary_search_tree(array[mid+1:], node)
+
+            return node
 
     def _get_inordered_values(self, node, values):
         if node:
@@ -87,18 +88,18 @@ class BinarySearchTree:
             self.root = BSTNode(value)
             self._length += 1
         else:
-            parent_node = self.root
-            while parent_node:
-                if value < parent_node.value and parent_node.left:
-                    parent_node = parent_node.left
-                elif value < parent_node.value and not parent_node.left:
-                    parent_node.left = BSTNode(value, parent_node)
+            node = self.root
+            while node:
+                if value < node.value and node.left:
+                    node = node.left
+                elif value < node.value and not node.left:
+                    node.left = BSTNode(value, node)
                     self._length += 1
                     return
-                elif value > parent_node.value and parent_node.right:
-                    parent_node = parent_node.right
-                elif value > parent_node.value and not parent_node.right:
-                    parent_node.right = BSTNode(value, parent_node)
+                elif value > node.value and node.right:
+                    node = node.right
+                elif value > node.value and not node.right:
+                    node.right = BSTNode(value, node)
                     self._length += 1
                     return
                 else:
@@ -158,3 +159,7 @@ class BinarySearchTree:
 
     def inorder(self):
         return self._get_inordered_values(self.root, [])
+
+
+b = BinarySearchTree([3, 7, 5, 6, 4, 1])
+print(b.root)

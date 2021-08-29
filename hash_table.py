@@ -1,49 +1,74 @@
+"""
+Hash table implementation.
+Collision resolution is separate chaining with singly linked list.
+
+Usage example:
+-------
+>> h = HashTable(5, [('one', 1), ('two', 2), ('three', 3)])
+>> h
+{'two': 2, 'one': 1, 'three': 3}
+>> h.add('four', 4)                         # {'two': 2, 'four': 4, 'three': 3, 'one': 1}
+>> h.pop('three')                           # {'two': 2, 'four': 4, 'one': 1}
+3
+>> h.get('five')
+None
+>> h['five']
+KeyError: 'Key is not in the hash table.'
+>> h['six'] = 6                             # {'two': 2, 'four': 4, 'six': 6, 'one': 1}
+>> h['one'] = True                          # {'two': 2, 'four': 4, 'six': 6, 'one': True}
+>> h.keys()
+['two', 'four', 'six', 'one']
+>> h.values()
+[2, 4, 6, True]
+>> h.items()
+[('two', 2), ('four', 4), ('six', 6), ('one', True)]
+>> len(h)
+4
+
+Example on collision resolution:
+-------
+>> h = HashTable(3)                   # h.array: [None, None, None]
+# Select keys with equal hashes.
+>> h._hash('hello')
+2
+>> h._hash('world')
+2
+>> h.add('hello', 1)                  # h.array: [None, None, «['hello', 1]»]
+>> h.add('world', 2)                  # h.array: [None, None, «['world', 2] --> ['hello', 1]»]
+# Both items are in last array cell,
+# contained in singly linked list.
+# Capacity doubles if load_factor > 0.75.
+>> h.add('bar', 3)                    # h.array: [None, None, None, None, «['bar', 3]», «['hello', 1] --> ['world', 2]»]
+"""
 from algorithms.linked_lists import SinglyLinkedList
 
 
 class HashTable:
     """
-    Implementation of an associative array abstract data type.
-    Collision resolution is separate chaining with singly linked list.
     Supported methods: __init__, __iter__, __contains__, __len__,
     __getitem__, __setitem__, __repr__, _get_load_factor,
     _increase_capacity, keys, values, items, get, add, pop.
+    All methods behave the same as python dict methods.
     """
     def __init__(self, capacity, iterable=()):
         self.array = [None]*capacity
         self._length = 0
         self.max_load_factor = 0.75
 
-        for item in iterable:
-            if len(item) != 2:
-                raise TypeError('Expected sequence of containers with 2 elements inside.')
-
-            self.add(item[0], item[1])
+        self._build_hash_table(iterable)
 
     def __iter__(self):
-        """
-        Same behavior as python dict.__iter__().
-        Yields key on each iteration.
-        """
+        """Yields key on each iteration."""
         for cell in self.array:
             if cell is not None:
                 for item in cell:
                     yield item[0]
 
-    def __contains__(self, required_key):
-        """
-        Returns True if key is in hash table. False otherwise.
-        """
-        for key in self:
-            if key == required_key:
-                return True
-
-        return False
+    def __contains__(self, key):
+        return key in self.keys()
 
     def __len__(self):
-        """
-        Returns number of all (key, value) pairs in hash table.
-        """
+        """Returns number of (key, value) pairs in hash table."""
         return self._length
 
     def __getitem__(self, key):
@@ -51,11 +76,8 @@ class HashTable:
         Returns value by required key.
         if key is not in the hash table, raises KeyError.
         """
-        # Checks if key is in hash table.
         if key not in self:
             raise KeyError('Key is not in the hash table.')
-
-        # If key is in the hash table, returns it's value.
         else:
             return self.get(key)
 
@@ -66,48 +88,44 @@ class HashTable:
         """
         index = self._hash(key)
 
-        # If cell isn't empty - looks for required key in cell items.
         if self.array[index]:
             for item in self.array[index]:
-                # If required key is found, update it's value.
                 if item[0] == key:
                     item[1] = value
                     return
 
-            # If key is not in singly linked list yet, adds (key, value) pair to it.
             self.array[index].add([key, value])
 
         else:
-            # If array cell with hash index is empty, creates singly linked list and adds key, value in it.
             self.array[index] = SinglyLinkedList(([key, value],))
 
         self._length += 1
 
-        # Checks if it's time to increase capacity.
         if self._get_load_factor() > self.max_load_factor:
             self._increase_capacity()
 
     def __repr__(self):
-        """
-        String representation of HashTable object.
-        Same style as python dict.__repr__().
-        """
-        items = ''
+        items_repr = []
         for key in self:
             value = self.get(key)
 
-            items += "{0}: {1}, ".format(
+            item_repr = "{0}: {1}".format(
                 "'{}'".format(key) if isinstance(key, str) else key,
                 "'{}'".format(value) if isinstance(value, str) else value
             )
+            items_repr.append(item_repr)
 
-        # items[-2] cuts off last comma and space.
-        return '{' + items[:-2] + '}'
+        return '{' + ', '.join(items_repr) + '}'
+
+    def _build_hash_table(self, iterable):
+        # iterable expected to be container with (key, value) items.
+        for item in iterable:
+            if len(item) != 2:
+                raise TypeError('Expected sequence of containers with 2 elements inside.')
+
+            self.add(item[0], item[1])
 
     def _hash(self, key):
-        # Obviously, not the greatest hash function ever,
-        # and probably built-in hash() function or any hashlib functions could be used,
-        # but goal was to implement a custom one.
         """
         Accepts hashable key and transforms it into an integer hash value.
         If key is not hashable, TypeError is raised.
@@ -115,8 +133,7 @@ class HashTable:
         if not key.__hash__:
             raise TypeError('Unhashable key type')
 
-        # Constant values used by function.
-        # Has separate values for str type, so
+        # Has separate constant value for str type, so
         # 1 and '1' keys are hashed differently.
         const = 53 if isinstance(key, str) else 47
         max_pow = 5
@@ -129,11 +146,6 @@ class HashTable:
         return hash_value % len(self.array)
 
     def _get_load_factor(self):
-        """
-        Returns value of load_factor -
-        Ratio of number of stored items to array length.
-        Value more than self.max_load_factor means it's time to increase capacity.
-        """
         return len(self) / len(self.array)
 
     def _increase_capacity(self):
@@ -149,41 +161,29 @@ class HashTable:
         self.array = temp_hash_table.array
 
     def keys(self):
-        """
-        Returns list of keys stored in hash table.
-        """
+        """Returns list of keys."""
         return [key for key in self]
 
     def values(self):
-        """
-        Returns list of values stored in hash table.
-        """
+        """Returns list of values."""
         return [self[key] for key in self]
 
     def items(self):
-        """
-        Returns list of tuples (key, value) stored in hash table.
-        """
+        """Returns list of (key, value) items."""
         return [(key, self[key]) for key in self]
 
     def get(self, key, default=None):
         """
-        Behaves the same as dict.get()
         Returns value by a given key.
         If key is not in hash table, returns default (or None).
         """
-        # Gets hash from key.
         index = self._hash(key)
 
-        # Checks if array cell with hash index already contains data.
         if self.array[index]:
-            # if True - looks for required key in cell items.
             for item in self.array[index]:
-                # If required key is found, returns it's value.
                 if item[0] == key:
                     return item[1]
 
-        # If required key isn't found, returns default.
         return default
 
     def add(self, key, value):
@@ -191,57 +191,41 @@ class HashTable:
         Adds key and value to the hash table.
         If key is already in table, KeyError is raised.
         """
-        # Gets hash from key.
         index = self._hash(key)
 
-        # Checks if array cell with hash index already contains data.
         # If True - Collision.
         if self.array[index]:
-            # Checks if key already in singly linked list.
             for item in self.array[index]:
-                # Raises KeyError if True.
                 if item[0] == key:
                     raise KeyError('Item with this key already exists')
 
-            # If key is not in singly linked list yet, adds (key, value) pair to it.
             self.array[index].add([key, value])
-
-        # If array cell with required hash index is empty, creates singly linked list with (key, value) in first node.
         else:
             self.array[index] = SinglyLinkedList(([key, value],))
 
-        # Increments hash table length by 1.
         self._length += 1
 
-        # Checks if it's time to increase capacity.
         if self._get_load_factor() > self.max_load_factor:
             self._increase_capacity()
 
     def pop(self, key):
         """
-        Returns value by a given key, and removes (key, value) from hash table.
+        Returns value by a given key, and removes (key, value) item from hash table.
         Raises KeyError if key is not in the table.
         """
-        # Gets hash from key.
         index = self._hash(key)
 
-        # Checks if array cell with hash index contains data.
         if self.array[index]:
-            # If True, looks for required key in cell items.
             for i, item in enumerate(self.array[index]):
-                # If required key is found, removes (key, value) from the hash table, and returns value
+                # index is needed to pop item from singly linked list.
                 if item[0] == key:
                     value = self.array[index].pop(i)[1]
 
-                    # If singly linked list is empty after popping required node,
-                    # overwrites cell value to None.
                     if not self.array[index].first:
                         self.array[index] = None
 
-                    # Decrements hash table length by 1
                     self._length -= 1
 
                     return value
 
-        # If required key is not found, raises KeyError.
         raise KeyError('Key is not in the hash table.')
