@@ -30,32 +30,32 @@ def insertion_sort(array):
             k -= 1
 
 
-def merge_sort(arr):
+def merge_sort(array):
 
-    def merge(arr1, arr2):
+    def merge(array1, array2):
         i, j = 0, 0
         result = []
-        while i < len(arr1) or j < len(arr2):
-            if i >= len(arr1):
-                result += arr2[j:]
-                j = len(arr2)
-            elif j >= len(arr2):
-                result += arr1[i:]
-                i = len(arr1)
-            elif arr1[i] > arr2[j]:
-                result.append(arr2[j])
+        while i < len(array1) or j < len(array2):
+            if i >= len(array1):
+                result += array2[j:]
+                j = len(array2)
+            elif j >= len(array2):
+                result += array1[i:]
+                i = len(array1)
+            elif array1[i] > array2[j]:
+                result.append(array2[j])
                 j += 1
             else:
-                result.append(arr1[i])
+                result.append(array1[i])
                 i += 1
         return result
 
-    if len(arr) == 1:
-        return arr
+    if len(array) <= 1:
+        return array
 
-    mid = len(arr) // 2
-    left = merge_sort(arr[:mid])
-    right = merge_sort(arr[mid:])
+    mid = len(array) // 2
+    left = merge_sort(array[:mid])
+    right = merge_sort(array[mid:])
 
     return merge(left, right)
 
