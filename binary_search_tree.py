@@ -96,6 +96,7 @@ class BinarySearchTree:
                 mid = len(values) // 2
 
                 node = BSTNode(values[mid])
+                self._length += 1
 
                 if not self.root:
                     self.root = node
