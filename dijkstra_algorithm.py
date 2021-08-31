@@ -42,7 +42,10 @@ def dijkstra(adj_matrix, start, finish=None):
     "(!) Uncomment next line for more convenient string output."
     # return friendly_output(adj_matrix, start, paths, paths_weights, finish)
 
-    return paths, paths_weights
+    if finish is not None:
+        return paths[finish], paths_weights[finish]
+    else:
+        return paths, paths_weights
 
 
 def friendly_output(graph, start_v, paths_array, paths_weights_array, finish_v):
