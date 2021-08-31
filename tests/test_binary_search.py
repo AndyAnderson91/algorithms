@@ -1,91 +1,41 @@
-import unittest
+import pytest
 from algorithms.binary_search import binary_search_iterative, binary_search_recursive
 
 
-def create_test_case(function):
-    """
-    Iterative and recursive versions have same output,
-    So it's reasonable to use same tests on both.
-    """
-    class BinarySearchTestCase(unittest.TestCase):
-        """
-        Base binary search testing class.
-        Existent elements - required elements that are in list.
-        Nonexistent elements - required elements that aren't in list.
-        """
-        def test_empty_list(self):
-            """
-            Returns None if list is empty.
-            """
-            arr = []
-            element = 5
-
-            self.assertIsNone(function(arr, element))
-
-        def test_single_element_list(self):
-            """
-            Returns 0 for existent element.
-            Returns None for nonexistent element.
-            """
-            arr = [3]
-            existent_element = 3
-            nonexistent_elements = [2, 5]
-
-            self.assertEqual(function(arr, existent_element), 0)
-
-            for element in nonexistent_elements:
-                self.assertIsNone(function(arr, element))
-
-        def test_even_len_list(self):
-            """
-            Returns index (0-based) for existent element.
-            Returns None for nonexistent element.
-            """
-            arr = [-12, -7, 0, 1, 5, 8, 14, 25]
-            existent_elements = [-12, 0, 1, 14, 25]
-            nonexistent_elements = [-15, -1, 9, 26]
-
-            for element in existent_elements:
-                function_index = function(arr, element)
-                correct_index = arr.index(element)
-                self.assertEqual(function_index, correct_index)
-
-            for element in nonexistent_elements:
-                self.assertIsNone(function(arr, element))
-
-        def test_odd_len_list(self):
-            """
-            Returns index (0-based) for existent element.
-            Returns None for nonexistent element.
-            """
-            arr = [-55, -1, 0, 1, 13, 47, 48]
-            existent_elements = [-55, -1, 0, 1, 48]
-            nonexistent_elements = [-60, -2, 3, 50]
-
-            for element in existent_elements:
-                function_index = function(arr, element)
-                correct_index = arr.index(element)
-                self.assertEqual(function_index, correct_index)
-
-            for element in nonexistent_elements:
-                self.assertIsNone(function(arr, element))
-
-    return BinarySearchTestCase
+@pytest.fixture(params=[binary_search_iterative, binary_search_recursive])
+def binary_search_function(request):
+    return request.param
 
 
-class IterativeTestCase(create_test_case(binary_search_iterative)):
-    """
-    Runs all BinarySearchTestCase tests on binary_search_iterative function.
-    """
-    pass
+@pytest.mark.parametrize('array, value', [
+    ([2], 2),
+    ([1, 4], 1),
+    ([1, 4], 4),
+    ([2, 3, 7], 2),
+    ([2, 3, 7], 3),
+    ([2, 3, 7], 7),
+    ([0, 4, 5, 9], 0),
+    ([0, 4, 5, 9], 4),
+    ([0, 4, 5, 9], 5),
+    ([0, 4, 5, 9], 9),
+    ([3, 12, 14, 15, 19], 15),
+    ([-4, -1, 0, 2, 6, 9, 11, 13], -4)
+])
+def test_value_in_list(binary_search_function, array, value):
+    assert binary_search_function(array, value) == array.index(value)
 
 
-class RecursiveTestCase(create_test_case(binary_search_recursive)):
-    """
-    Runs all BinarySearchTestCase tests on binary_search_recursive function.
-    """
-    pass
-
-
-if __name__ == '__main__':
-    unittest.main()
+@pytest.mark.parametrize('array, value', [
+    ([], 3),
+    ([2, 9], 0),
+    ([2, 9], 4),
+    ([2, 9], 14),
+    ([1, 5, 7], -2),
+    ([1, 5, 7], 3),
+    ([1, 5, 7], 6),
+    ([1, 5, 7], 12),
+    ([-4, -3, 16, 20, 25, 36], 37),
+    ([4, 8, 9, 11, 12, 32, 41, 65], 7)
+])
+def test_value_not_in_list(binary_search_function, array, value):
+    assert binary_search_function(array, value) is None
