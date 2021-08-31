@@ -1,13 +1,63 @@
-def selection_sort(arr):
-    for i in range(len(arr) - 1):
+def bubble_sort(array):
+    check_again = True
+    i = 0
+    while check_again:
+        check_again = False
+        for j in range(len(array)-i-1):
+            if array[j + 1] < array[j]:
+                array[j + 1], array[j] = array[j], array[j + 1]
+                check_again = True
+        i += 1
+
+
+def selection_sort(array):
+    for i in range(len(array) - 1):
         # Current iteration's minimum value and it's index.
-        cur_min, cur_min_index = arr[i], i
+        cur_min, cur_min_index = array[i], i
 
-        for j in range(i + 1, len(arr)):
-            if arr[j] < cur_min:
-                cur_min, cur_min_index = arr[j], j
+        for j in range(i + 1, len(array)):
+            if array[j] < cur_min:
+                cur_min, cur_min_index = array[j], j
 
-        arr[i], arr[cur_min_index] = arr[cur_min_index], arr[i]
+        array[i], array[cur_min_index] = array[cur_min_index], array[i]
+
+
+def insertion_sort(array):
+    for i in range(1, len(array)):
+        k = i
+        while k > 0 and array[k] < array[k-1]:
+            array[k], array[k-1] = array[k-1], array[k]
+            k -= 1
+
+
+def merge_sort(arr):
+
+    def merge(arr1, arr2):
+        i, j = 0, 0
+        result = []
+        while i < len(arr1) or j < len(arr2):
+            if i >= len(arr1):
+                result += arr2[j:]
+                j = len(arr2)
+            elif j >= len(arr2):
+                result += arr1[i:]
+                i = len(arr1)
+            elif arr1[i] > arr2[j]:
+                result.append(arr2[j])
+                j += 1
+            else:
+                result.append(arr1[i])
+                i += 1
+        return result
+
+    if len(arr) == 1:
+        return arr
+
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+
+    return merge(left, right)
 
 
 def quick_sort(array):
