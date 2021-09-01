@@ -4,7 +4,8 @@ Collision resolution is separate chaining with singly linked list.
 
 Usage example:
 -------
->> h = HashTable(5, [('one', 1), ('two', 2), ('three', 3)])
+>> h = HashTable([('one', 1), ('two', 2), ('three', 3)])
+#  h = HashTable({'one': 1, 'two': 2, 'three': 3}) also possible.
 >> h
 {'two': 2, 'one': 1, 'three': 3}
 >> h.add('four', 4)                         # {'two': 2, 'four': 4, 'three': 3, 'one': 1}
@@ -27,7 +28,7 @@ KeyError: 'Key is not in the hash table.'
 
 Example on collision resolution:
 -------
->> h = HashTable(3)                   # h.array: [None, None, None]
+>> h = HashTable((), 3)                   # h.array: [None, None, None]
 # Select keys with equal hashes.
 >> h._hash('hello')
 2
@@ -46,14 +47,14 @@ from algorithms.linked_lists import SinglyLinkedList
 class HashTable:
     """
     Supported methods: __init__, __iter__, __contains__, __len__,
-    __getitem__, __setitem__, __repr__, _get_load_factor,
-    _increase_capacity, keys, values, items, get, add, pop.
+    __getitem__, __setitem__, __repr__, , _get_capacity,
+    _get_load_factor, _increase_capacity, keys, values, items, get, add, pop.
     All methods behave the same as python dict methods.
     """
-    def __init__(self, capacity, iterable=()):
-        self.array = [None]*capacity
+    def __init__(self, iterable=(), capacity=None, max_load_factor=0.75):
         self._length = 0
-        self.max_load_factor = 0.75
+        self.max_load_factor = max_load_factor
+        self.array = [None]*self._get_capacity(capacity, iterable)
 
         self._build_hash_table(iterable)
 
@@ -117,13 +118,26 @@ class HashTable:
 
         return '{' + ', '.join(items_repr) + '}'
 
-    def _build_hash_table(self, iterable):
-        # iterable expected to be container with (key, value) items.
-        for item in iterable:
-            if len(item) != 2:
-                raise TypeError('Expected sequence of containers with 2 elements inside.')
+    @staticmethod
+    def _get_capacity(capacity, iterable):
+        if isinstance(capacity, int) and capacity > 0:
+            suitable_capacity = max(capacity, len(iterable) + 1)
+        else:
+            suitable_capacity = 2 * len(iterable) + 1
 
-            self.add(item[0], item[1])
+        return suitable_capacity
+
+    def _build_hash_table(self, iterable):
+        # iterable expected to be a dict or container with (key, value) items.
+        if isinstance(iterable, dict):
+            for key in iterable:
+                self[key] = iterable[key]
+        else:
+            for item in iterable:
+                if len(item) != 2:
+                    raise TypeError('Expected sequence of containers with 2 elements inside.')
+
+                self.add(item[0], item[1])
 
     def _hash(self, key):
         """
@@ -154,7 +168,7 @@ class HashTable:
         creating temp hash table, copying all (key, value) pairs to it and
         replacing original table array with an increased temp array.
         """
-        temp_hash_table = HashTable(len(self.array) * 2)
+        temp_hash_table = HashTable((), len(self.array) * 2)
         for key in self:
             temp_hash_table.add(key, self[key])
 
