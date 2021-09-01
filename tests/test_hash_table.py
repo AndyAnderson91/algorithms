@@ -1,286 +1,266 @@
-import unittest
+"""
+HashTable class tests.
+Three tables are used for testing:
+1) Empty hash table. Used in several tests
+where it doesn't really matter is it filled or not,
+or there it should be empty.
+2) Hash table with collisions and hash table without collisions.
+These two are main testing objects, and almost every single test in this module
+runs both of them, to ensure all methods works correctly in both cases.
+"""
+import pytest
 from algorithms.hash_table import HashTable
 
 
-class HashTableGeneralTestCase(unittest.TestCase):
-    """
-    General TestCase for HashTable Class.
-    """
-    def setUp(self):
-        self.base_table = HashTable(5)
-        self.items = (
-            ('one', 1),
-            ('two', 2),
-            ('three', 3)
-        )
-        self.filled_table = HashTable(5, self.items)
-
-    def test_empty_table_repr(self):
-        """
-        Checks __repr__ method for empty table.
-        """
-        self.assertEqual(str(self.base_table), '{}')
-
-    def test_filled_table_repr(self):
-        """
-        Checks __repr__ method for filled table.
-        """
-        self.base_table.add('one', 1)
-        self.assertEqual(str(self.base_table), "{'one': 1}")
-
-    def test_hashable_keys(self):
-        """
-        Checks if custom _hash function only accepts hashable arguments.
-        """
-        for key in ('string', 100, 25.5, True, (1, 2, 3), range(5)):
-            self.assertTrue(isinstance(self.base_table._hash(key), int))
-
-    def test_unhashable_keys(self):
-        """
-        Checks if TypeError is raised if unhashable arguments are passed to custom _hash function.
-        """
-        for key in ([1, 2, 3], {'one': 1}, {1, 2, 2, 3}):
-            self.assertRaises(TypeError, self.base_table._hash, key)
-
-    def test_hash_is_lower_than_capacity(self):
-        """
-        Checks if custom _hash function returns indexes in range of table.array.
-        """
-        for key in ('string', 100, 25.5, True, (1, 2, 3), range(5)):
-            self.assertLess(self.base_table._hash(key), len(self.base_table.array))
-
-    def test_iter(self):
-        """
-        Checks if __iter__ method implemented correctly.
-        """
-        keys = set()
-        for key in self.filled_table:
-            keys.add(key)
-        self.assertEqual(keys, set([item[0] for item in self.items]))
-
-    def test_contains(self):
-        """
-        Checks if __contains__ method implemented correctly.
-        """
-        self.assertTrue('one' in self.filled_table)
-        self.assertFalse('ten' in self.filled_table)
-
-    def test_len(self):
-        """
-        Checks if __len__ method implemented correctly.
-        """
-        self.assertEqual(len(self.filled_table), len(self.items))
-
-    def test_getitem_by_existing_key(self):
-        """
-        Checks if __getitem__ method returns element by required existing index.
-        """
-        for item in self.items:
-            self.assertEqual(self.filled_table[item[0]], item[1])
-
-    def test_getitem_by_non_existing_key(self):
-        """
-        Checks if __getitem__ method raises KeyError if required key is not in table.
-        """
-        for key in ('string', 100, 25.5, True, (1, 2, 3), range(5)):
-            self.assertRaises(KeyError, self.filled_table.__getitem__, key)
-
-    def test_get_by_existing_key(self):
-        """
-        Checks if get method returns correct value by required key.
-        """
-        for item in self.items:
-            self.assertEqual(self.filled_table.get(item[0]), item[1])
-
-    def test_get_by_non_existing_key(self):
-        """
-        Checks if get method returns None by non-existing key.
-        """
-        for key in ('string', 100, 25.5, True, (1, 2, 3), range(5)):
-            self.assertIsNone(self.filled_table.get(key))
-
-    def test_setitem_by_new_key(self):
-        """
-        Checks if __setitem__ method adds key, value in table if required key is not there yet.
-        """
-        self.filled_table['ten'] = 10
-        self.assertEqual(self.filled_table['ten'], 10)
-        self.assertEqual(len(self.filled_table), len(self.items) + 1)
-
-    def test_setitem_by_existing_key(self):
-        """
-        Checks if __setitem__ method updates value by existing key.
-        """
-        self.filled_table['one'] = 'Hello'
-        self.assertEqual(self.filled_table['one'], 'Hello')
-        self.assertEqual(len(self.filled_table), len(self.items))
-
-    def test_add_by_new_key(self):
-        """
-        Checks if add method adds key, value in table if key is not there yet.
-        """
-        self.filled_table.add('ten', 10)
-        self.assertEqual(self.filled_table['ten'], 10)
-        self.assertEqual(len(self.filled_table), len(self.items) + 1)
-
-    def test_add_by_existing_key(self):
-        """
-        Checks if KeyError is raised if attempts to add new key, value to table with existing key.
-        """
-        self.assertRaises(KeyError, self.filled_table.add, 'one', 'Any')
-
-    def test_get_load_factor(self):
-        """
-        Checks if _get_load_factor method returns correct value.
-        """
-        self.assertEqual(self.filled_table._get_load_factor(), len(self.filled_table)/len(self.filled_table.array))
-
-    def test_increase_capacity(self):
-        """
-        Checks if _increase_capacity method implemented correctly.
-        """
-        self.assertEqual(len(self.filled_table.array), 5)
-        self.filled_table['overloading'] = 'Yes'
-        self.assertEqual(len(self.filled_table.array), 10)
-
-    def test_keys(self):
-        """
-        Checks if keys method returns existing keys.
-        """
-        self.assertEqual(set(self.filled_table.keys()), set([item[0] for item in self.items]))
-
-    def test_values(self):
-        """
-        Checks if value method returns existing values.
-        """
-        self.assertEqual(set(self.filled_table.values()), set([item[1] for item in self.items]))
-
-    def test_items(self):
-        """
-        Checks if items method returns key, value pairs.
-        """
-        self.assertEqual(set(self.filled_table.items()), set(self.items))
-
-    def test_pop_by_existing_key(self):
-        """
-        Checks pop method returns removes key, value from the table and returns value if required key is in the table.
-        """
-        self.assertEqual(self.filled_table.pop(self.items[0][0]), self.items[0][1])
-
-    def test_pop_last_node_in_array_cell(self):
-        """
-        Checks pop method overwrites array cell by None, if last item in this cell was popped.
-        """
-        self.filled_table.pop(self.items[0][0])
-        self.assertIsNone(self.filled_table.array[self.filled_table._hash('one')])
-
-    def test_pop_lowers_length_attribute(self):
-        """
-        Checks if pop method lowers table._length by 1.
-        """
-        self.filled_table.pop(self.items[0][0])
-        self.assertEqual(len(self.filled_table), len(self.items) - 1)
-
-    def test_pop_by_non_existing_key(self):
-        """
-        Checks if KeyError is raised if attempts to pop element by non-existing key.
-        """
-        self.assertRaises(KeyError, self.filled_table.pop, 'ten')
+# Items placed in filled hash table on creation.
+INITIAL_ITEMS = [('one', 1), ('two', 2), ('three', 3)]
+# For more convenience.
+INITIAL_KEYS = [item[0] for item in INITIAL_ITEMS]
+# List of keys that are not present in hash table.
+NON_EXISTING_KEYS = [12, 'abc', True, None]
+# List of objects that can be hashed.
+HASHABLE_KEYS = [1, 345, 567821345, 0, -12, 'text', '',
+                 (1, 2, 3, 4), (), True, False, None]
 
 
-class CollisionProcessingTestCase(unittest.TestCase):
-    """
-    This TestCase purpose is to test collision resolution and implemented methods behavior in collision situation.
-    """
-    def setUp(self):
-        """
-        Keys are deliberately selected on a way, their hashes are one integer.
-        Not hard considering hashtable is only 5 elements size.
-        All these items will be store in one array cell and contained in singly linked list.
-        """
-        self.items = [(137, 'First'), (54, 'Second'), (96, 'Third')]
-        self.table = HashTable(5, self.items)
-        self.cell_index = self.table._hash(self.items[0][0])
-        self.cell = self.table.array[self.cell_index]
+@pytest.fixture
+def empty_table():
+    return HashTable()
 
-    def test_equal_hash_for_items(self):
-        """
-        Checks if all hashes are equal.
-        """
-        self.assertEqual(self.cell_index, self.table._hash(self.items[1][0]))
-        self.assertEqual(self.cell_index, self.table._hash(self.items[2][0]))
 
-    def test_all_items_in_one_cell(self):
-        """
-        Checks if all 3 items are stored in one array cell.
-        """
-        self.assertEqual(len(self.cell), 3)
+@pytest.fixture
+def filled_table_with_collisions():
+    return HashTable(INITIAL_ITEMS, 4)
 
-    def test_cell_repr(self):
-        """
-        This one is more like a demonstration of how does it look, than actually a test.
-        This is how items are stored in one array cell.
-        """
-        self.assertEqual(str(self.cell), "«[96, 'Third'] --> [54, 'Second'] --> [137, 'First']»")
 
-    def test_table_repr(self):
-        """
-        Checks if table.__repr__ method works correctly.
-        """
-        self.assertEqual(str(self.table), "{96: 'Third', 54: 'Second', 137: 'First'}")
+@pytest.fixture
+def filled_table_without_collisions():
+    return HashTable(INITIAL_ITEMS, 5)
 
-    def test_iter(self):
-        """
-        Checks if __iter__ method works correctly.
-        """
-        keys = set()
-        for key in self.table:
-            keys.add(key)
-        self.assertEqual(keys, set([item[0] for item in self.items]))
 
-    def test_getitem_by_existing_key(self):
-        """
-        Checks if __getitem__ method works correctly.
-        """
-        for item in self.items:
-            self.assertEqual(self.table[item[0]], item[1])
+@pytest.fixture(params=['filled_table_with_collisions',
+                        'filled_table_without_collisions'])
+def filled_table(request):
+    return request.getfixturevalue(request.param)
 
-    def test_get_by_existing_key(self):
-        """
-        Checks if get method works correctly.
-        """
-        for item in self.items:
-            self.assertEqual(self.table.get(item[0]), item[1])
 
-    def test_setitem_by_existing_key(self):
-        """
-        Checks if __setitem__ method works correctly.
-        """
-        for i, item in enumerate(self.items):
-            self.table[item[0]] = 'New data №{}'.format(i)
-            self.assertEqual(self.table[item[0]], 'New data №{}'.format(i))
+# Tests starts here.
+def test_filled_table_with_collisions(filled_table_with_collisions):
+    """Checks if this table has collisions."""
+    # Filled cells number is less than items amount.
+    filled_cells = [cell for cell in filled_table_with_collisions.array if cell is not None]
+    assert len(filled_cells) < len(INITIAL_ITEMS)
 
-    def test_pop_by_existing_key(self):
-        """
-        Checks if pop method works correctly.
-        """
-        self.assertEqual(self.table.pop(self.items[2][0]), self.items[2][1])
-        self.assertEqual(len(self.table), len(self.items) - 1)
 
-    def test_keys(self):
-        """
-        Checks if keys method works correctly.
-        """
-        self.assertEqual(set(self.table.keys()), set([item[0] for item in self.items]))
+def test_filled_table_without_collisions(filled_table_without_collisions):
+    """Checks if this table doesn't have collisions."""
+    # One item per array cell.
+    filled_cells = [cell for cell in filled_table_without_collisions.array if cell is not None]
+    assert len(filled_cells) == len(INITIAL_ITEMS)
 
-    def test_values(self):
-        """
-        Checks if values method works correctly.
-        """
-        self.assertEqual(set(self.table.values()), set([item[1] for item in self.items]))
 
-    def test_items(self):
-        """
-        Checks if items method works correctly.
-        """
-        self.assertEqual(set(self.table.items()), set(self.items))
+@pytest.mark.parametrize('key', HASHABLE_KEYS)
+def test_hashing_of_hashable_keys(empty_table, key):
+    assert isinstance(empty_table._hash(key), int)
+
+
+@pytest.mark.parametrize('key',
+                         [[], [1, 2, 3], {}, {'abc': 123}, set(), {1, 2, 3, 4, 5}])
+def test_hashing_of_unhashable_keys_raise_error(empty_table, key):
+    with pytest.raises(TypeError):
+        empty_table._hash(key)
+
+
+@pytest.mark.parametrize('key', HASHABLE_KEYS)
+def test_hash_is_lower_than_capacity(empty_table, key):
+    assert empty_table._hash(key) < len(empty_table.array)
+
+
+@pytest.mark.parametrize('non_iterable', [12, True, False, 0, 2.5, None])
+def test_build_hash_table_with_non_iterable_argument(non_iterable):
+    with pytest.raises(TypeError):
+        HashTable(non_iterable)
+
+
+@pytest.mark.parametrize('wrong_iterable', [
+    (1, ),
+    (1, 2, 3),
+    {1, 2, 3, 4},
+    [(1, 2), (3, 4), (5, )]
+])
+def test_build_hash_table_with__wrong_format_argument(wrong_iterable):
+    # Correct format is a sequence of 2-items tuples or dict.
+    with pytest.raises(TypeError):
+        HashTable(wrong_iterable)
+
+
+@pytest.mark.parametrize('list_argument', [
+    [(1, 2), (3, 4), (5, 6)],
+    [('a', 'b')],
+    [(True, 1), (False, 0)]
+])
+def test_build_hash_table_with_list_of_tuples_argument(list_argument):
+    assert len(HashTable(list_argument)) == len(list_argument)
+
+
+@pytest.mark.parametrize('dict_argument', [
+    {1: 2, 3: 4, 5: 6},
+    {'a': 'b'},
+    {True: 1, False: 0}
+])
+def test_build_hash_table_with_dict_argument(dict_argument):
+    assert len(HashTable(dict_argument)) == len(dict_argument)
+
+
+@pytest.mark.parametrize('iterable, capacity_given, capacity_expected', [
+    ((), None, 1),
+    ((1, ), None, 3),
+    ((1, 2), None, 5),
+    ((), 0, 1),
+    ((), 1, 1),
+    ((), 6, 6),
+    # Minimum initial capacity is len(iterable) + 1,
+    # even if it's lower value directly passed as argument.
+    ((1, 2, 3), 1, 4),
+    ((1, 2, 3, 4, 5), 2, 6)
+    ])
+def test_get_capacity(iterable, capacity_given, capacity_expected):
+    assert HashTable._get_capacity(capacity_given, iterable) == capacity_expected
+
+
+def test_iter(filled_table):
+    assert set([key for key in filled_table]) == set(INITIAL_KEYS)
+
+
+def test_len(filled_table):
+    assert len(filled_table) == len(INITIAL_ITEMS)
+
+
+@pytest.mark.parametrize('key', INITIAL_KEYS)
+def test_contain_true(filled_table, key):
+    assert key in filled_table
+
+
+@pytest.mark.parametrize('key', NON_EXISTING_KEYS)
+def test_contain_false(filled_table, key):
+    assert key not in filled_table
+
+
+def test_repr_empty_hash_table(empty_table):
+    assert empty_table.__repr__() == '{}'
+
+
+def test_repr_hash_table():
+    # Not testing with many items because of random order.
+    assert HashTable([(123, 'abc')]).__repr__() == "{123: 'abc'}"
+
+
+@pytest.mark.parametrize('key', INITIAL_KEYS)
+def test_getitem_by_existing_key(filled_table, key):
+    assert filled_table[key] == dict(INITIAL_ITEMS)[key]
+
+
+@pytest.mark.parametrize('key', NON_EXISTING_KEYS)
+def test_getitem_by_non_existing_key_raise_error(filled_table, key):
+    with pytest.raises(KeyError):
+        filled_table[key]
+
+
+@pytest.mark.parametrize('key', INITIAL_KEYS)
+def test_setitem_by_existing_key(filled_table, key):
+    filled_table[key] = 'New value'
+    assert filled_table[key] == 'New value'
+
+
+@pytest.mark.parametrize('key', NON_EXISTING_KEYS)
+def test_setitem_by_non_existing_key(filled_table, key):
+    filled_table[key] = 'New value'
+    assert filled_table[key] == 'New value'
+
+
+@pytest.mark.parametrize('key', NON_EXISTING_KEYS)
+def test_setitem_by_non_existing_key_increase_length(filled_table, key):
+    initial_length = len(filled_table)
+    filled_table[key] = 'New value'
+    assert len(filled_table) == initial_length + 1
+
+
+@pytest.mark.parametrize('items ,capacity', [
+    ([], 2),
+    ([(True, False)], 4),
+    ([('a', 'b'), ('c', 'd')], 10),
+    ([(1, 2), (3, 4), (5, 6)], 500)
+])
+def test_get_load_factor(items, capacity):
+    assert HashTable(items, capacity)._get_load_factor() == len(items) / capacity
+
+
+def test_increase_capacity(filled_table):
+    # Current len(self.array) = 4 for table_with_collisions
+    # and 5 for table_without_collisions.
+    # Each table contains 3 items,
+    # So at both tables load_factor is not more than 0.75.
+    # After adding 1 item, both tables load_factor will exceed 0.75,
+    # (border value by default), so capacity will be doubled.
+    initial_capacity = len(filled_table.array)
+    filled_table['four'] = 4
+    assert len(filled_table.array) == initial_capacity*2
+
+
+def test_keys(filled_table):
+    assert set(filled_table.keys()) == set(INITIAL_KEYS)
+
+
+def test_values(filled_table):
+    assert set(filled_table.values()) == set([item[1] for item in INITIAL_ITEMS])
+
+
+def test_items(filled_table):
+    assert set(filled_table.items()) == set(INITIAL_ITEMS)
+
+
+@pytest.mark.parametrize('key', INITIAL_KEYS)
+def test_get_by_existing_key(filled_table, key):
+    assert filled_table.get(key) == dict(INITIAL_ITEMS)[key]
+
+
+@pytest.mark.parametrize('key', NON_EXISTING_KEYS)
+def test_get_by_non_existing_key_return_none(filled_table, key):
+    assert filled_table.get(key) is None
+
+
+@pytest.mark.parametrize('key', NON_EXISTING_KEYS)
+def test_add_by_non_existing_key_increase_length(filled_table, key):
+    initial_length = len(filled_table)
+    filled_table.add(key, 'New value')
+    assert len(filled_table) == initial_length + 1
+
+
+@pytest.mark.parametrize('key', NON_EXISTING_KEYS)
+def test_value_is_acceptable_after_add(filled_table, key):
+    filled_table.add(key, 'New value')
+    assert filled_table[key] == 'New value'
+
+
+@pytest.mark.parametrize('key', INITIAL_KEYS)
+def test_add_by_existing_key_raise_error(filled_table, key):
+    with pytest.raises(KeyError):
+        filled_table.add(key, 'New value')
+
+
+@pytest.mark.parametrize('key', INITIAL_KEYS)
+def test_pop_by_existing_key_decrease_length(filled_table, key):
+    initial_length = len(filled_table)
+    filled_table.pop(key)
+    assert len(filled_table) == initial_length - 1
+
+
+@pytest.mark.parametrize('key', INITIAL_KEYS)
+def test_pop_by_existing_key_return_correct_value(filled_table, key):
+    assert filled_table.pop(key) == dict(INITIAL_ITEMS)[key]
+
+
+@pytest.mark.parametrize('key', NON_EXISTING_KEYS)
+def test_pop_by_non_existing_key_raise_error(filled_table, key):
+    with pytest.raises(KeyError):
+        filled_table.pop(key)
