@@ -1,234 +1,186 @@
-import unittest
+"""
+Tests for LLCommonMethods, LLItemsAccessMethods,
+SinglyLinkedList and DoublyLinkedList classes.
+"""
+# ll - shortcut for linked list.
+import pytest
 from algorithms.linked_lists import SinglyLinkedList, DoublyLinkedList
 
 
-def create_singly_and_doubly_linked_lists_test_cases(linked_list_class):
-    """
-    SinglyLinkedList and DoublyLinkedList have slightly different implementation,
-    but same output for most of the methods.
-    It's reasonable to have common test package.
-    """
-
-    class SinglyAndDoublyLinkedListTestCase(unittest.TestCase):
-        """
-        Common TestCase package.
-        """
-        def setUp(self):
-            self.linked_list = linked_list_class()
-            self.elements = ('a', 'b', 'c', 'd')
-            self.length = len(self.elements)
-            self.out_of_range_indexes = [i for i in range(-self.length - 5, self.length + 6) if abs(i) > self.length]
-
-        def test_create_linked_list_with_not_iterable_argument(self):
-            """
-            Checks if TypeError is raised if argument is not iterable.
-            """
-            self.assertRaises(TypeError, linked_list_class, 12345)
-
-        def test_create_linked_list_with_iterable_argument(self):
-            """
-            Checks if __init__ method implemented correctly.
-            """
-            self.assertEqual(len(linked_list_class([1, 2, 3, 4, 5])), 5)
-
-        def test_empty_list_repr(self):
-            """
-            Checks if empty list representation is correct.
-            """
-            self.assertEqual(self.linked_list.__repr__(), '«»')
-
-        def test_iter(self):
-            """
-            Checks if __iter__ method implemented correctly.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for j, node_data in enumerate(self.linked_list):
-                self.assertEqual(node_data, self.elements[j])
-
-        def test_contains(self):
-            """
-            Checks if __contains__ method implemented correctly.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for data in self.elements:
-                self.assertTrue(data in self.linked_list)
-
-        def test_len(self):
-            """
-            Checks if __len__ method implemented correctly.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            self.assertEqual(len(self.linked_list), 4)
-
-        def test_getitem_by_index_in_range(self):
-            """
-            Checks if __getitem__ method returns element by required existing index.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for i in range(self.length):
-                self.assertEqual(self.linked_list[i], self.elements[i])
-
-        def test_getitem_by_index_out_of_range(self):
-            """
-            Checks if __getitem__ method raises IndexError if required index is out of range.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for i in self.out_of_range_indexes:
-                self.assertRaises(IndexError, self.linked_list.__getitem__, i)
-
-        def test_setitem_by_index_in_range(self):
-            """
-            Checks if __setitem__ method overwrites element by required existing index.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for i in range(self.length):
-                self.linked_list[i] = 'New data'
-                self.assertEqual(self.linked_list[i], 'New data')
-
-        def test_setitem_by_index_out_of_range(self):
-            """
-            Checks if __setitem__ method raises IndexError if required index is out of range.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for i in self.out_of_range_indexes:
-                self.assertRaises(IndexError, self.linked_list.__setitem__, i, 'New data')
-
-        def test_add_to_empty_list(self):
-            """
-            Checks if list.first link points to element added in empty list.
-            """
-            self.linked_list.add('Hello')
-            self.assertEqual(self.linked_list.first.value, 'Hello')
-
-        def test_insert_in_correct_order(self):
-            """
-            Checks if elements are inserted in correct order.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            node, i = self.linked_list.first, 0
-            while node:
-                self.assertEqual(node.value, self.elements[i])
-                node = node.next
-                i += 1
-
-        def test_insert_by_positive_index_in_range(self):
-            """
-            Checks if element is inserted before required existing positive index.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for pos_index in range(1, self.length):
-                self.linked_list.insert('e', pos_index)
-                self.assertEqual(self.linked_list._get_node(pos_index-1).next.value, 'e')
-                self.linked_list.pop(pos_index)
-
-        def test_insert_by_positive_index_out_of_range(self):
-            """
-            Checks if element is inserted in the end of the list if required positive index doesn't exist.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for pos_index in range(self.length, self.length + 5):
-                self.linked_list.insert('e', pos_index)
-                self.assertEqual(self.linked_list._get_node(self.length - 1).next.value, 'e')
-                self.linked_list.pop(self.length)
-
-        def test_insert_by_zero_index(self):
-            """
-            Checks if element is added to the front of the list.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            self.linked_list.insert('e', 0)
-            self.assertEqual(self.linked_list.first.value, 'e')
-
-        def test_insert_by_negative_index_in_range(self):
-            """
-            Checks if element is added before required existing negative index.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for neg_index in range(-self.length, 0):
-                self.linked_list.insert('e', neg_index)
-                self.assertEqual(self.linked_list[neg_index - 1], 'e')
-                self.linked_list.pop(neg_index - 1)
-
-        def test_insert_by_negative_index_out_of_range(self):
-            """
-            Checks if element is added in the front of the list.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for neg_index in range(-self.length - 5, -self.length):
-                self.linked_list.insert('e', neg_index)
-                self.assertEqual(self.linked_list.first.value, 'e')
-                self.linked_list.pop(0)
-
-        def test_pop_without_index(self):
-            """
-            Checks default pop method behavior.
-            By default, first element is removed from list and returned.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for j in range(self.length):
-                popped = self.linked_list.pop()
-                self.assertEqual(popped, self.elements[j])
-
-        def test_pop_by_index_in_range(self):
-            """
-            Checks if element is removed from list and returned by required existing index.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for j in range(-self.length, self.length):
-                popped = self.linked_list.pop(j)
-                self.assertEqual(popped, self.elements[j])
-                if j >= 0:
-                    self.linked_list.insert(popped, j)
-                elif j == -1:
-                    self.linked_list.insert(popped, self.length - 1)
-                else:
-                    self.linked_list.insert(popped, j + 1)
-
-        def test_pop_by_index_out_of_range(self):
-            """
-            Checks if IndexError is raised if pop method receives index out of range.
-            """
-            self.linked_list = linked_list_class(self.elements)
-            for i in self.out_of_range_indexes:
-                self.assertRaises(IndexError, self.linked_list.pop, i)
-
-    return SinglyAndDoublyLinkedListTestCase
+# Values placed in filled linked list on creation.
+INITIAL_VALUES = ['Hello', 21, True, (1, 2, 3)]
 
 
-class SinglyLinkedListTestCase(create_singly_and_doubly_linked_lists_test_cases(SinglyLinkedList)):
-
-    def test_filled_list_repr(self):
-        """
-        Checks if filled list represented correctly.
-        """
-        self.linked_list = SinglyLinkedList(('a', (1, 2), 5, 'd'))
-        self.assertEqual(self.linked_list.__repr__(), "«'d' --> 5 --> (1, 2) --> 'a'»")
-
-    def test_add_to_filled_list(self):
-        self.linked_list = SinglyLinkedList(self.elements)
-        self.linked_list.add('Hello')
-        self.assertEqual(self.linked_list.first.value, 'Hello')
+@pytest.fixture(params=range(-len(INITIAL_VALUES), len(INITIAL_VALUES)))
+def in_range_index(request):
+    # Set of indexes used to refer to the ll values.
+    return request.param
 
 
-class DoublyLinkedListTestCase(create_singly_and_doubly_linked_lists_test_cases(DoublyLinkedList)):
-
-    def test_filled_list_repr(self):
-        """
-        Checks if filled list represented correctly.
-        """
-        self.linked_list = DoublyLinkedList(('a', (1, 2), 5, 'd'))
-        self.assertEqual(self.linked_list.__repr__(), "«'a' <--> (1, 2) <--> 5 <--> 'd'»")
-
-    def test_add_to_filled_list(self):
-        """
-        Checks if list.last link points to element added to filled list.
-        """
-        self.linked_list = DoublyLinkedList(self.elements)
-        self.linked_list.add('Hello')
-        updated_elements = self.elements + ('Hello',)
-        for i, node_data in enumerate(self.linked_list):
-            self.assertEqual(node_data, updated_elements[i])
+@pytest.fixture(params=[-len(INITIAL_VALUES)-1, len(INITIAL_VALUES)])
+def out_of_range_index(request):
+    # Set of indexes too small or too big to refer to the ll values.
+    return request.param
 
 
-if __name__ == '__main__':
-    unittest.main()
+@pytest.fixture(params=[SinglyLinkedList, DoublyLinkedList])
+def empty_ll(request):
+    return request.param()
+
+
+@pytest.fixture
+def filled_singly_ll():
+    # By default add() method inserts new value in the front of the list,
+    # So to build linked list with similar indexing as in iterable argument,
+    # It should be passed in class in reversed order.
+    return SinglyLinkedList(reversed(INITIAL_VALUES))
+
+
+@pytest.fixture
+def filled_doubly_ll():
+    # By default add() method inserts new value in the front of the list,
+    # So to build linked list with similar indexing as in iterable argument,
+    # It should be passed in class in reversed order.
+    return DoublyLinkedList(reversed(INITIAL_VALUES))
+
+
+@pytest.fixture(params=[SinglyLinkedList, DoublyLinkedList])
+def filled_ll(request):
+    # By default add() method inserts new value in the front of the list,
+    # So to build linked list with similar indexing as in iterable argument,
+    # It should be passed in class in reversed order.
+    return request.param(reversed(INITIAL_VALUES))
+
+
+# Tests on LLCommonMethod class.
+@pytest.mark.parametrize('ll_class, arg', [
+    (SinglyLinkedList, 123),
+    (DoublyLinkedList, True),
+])
+def test_build_linked_list_with_not_iterable_argument(ll_class, arg):
+    with pytest.raises(TypeError):
+        ll_class(arg)
+
+
+def test_iter(filled_ll):
+    assert [value for value in filled_ll] == INITIAL_VALUES
+
+
+def test_empty_ll_len(empty_ll):
+    assert len(empty_ll) == 0
+
+
+def test_filled_ll_len(filled_ll):
+    assert len(filled_ll) == len(INITIAL_VALUES)
+
+
+@pytest.mark.parametrize('value', INITIAL_VALUES)
+def test_contains_true(filled_ll, value):
+    assert value in filled_ll
+
+
+@pytest.mark.parametrize('value', [3, 'word', False])
+def test_contains_false(filled_ll, value):
+    assert value not in filled_ll
+
+
+def test_repr_empty_ll(empty_ll):
+    assert empty_ll.__repr__() == '«»'
+
+
+def test_repr_filled_singly_ll(filled_singly_ll):
+    correct = '«' + ' --> '.join([f"'{val}'" if isinstance(val, str) else str(val) for val in INITIAL_VALUES]) + '»'
+    assert filled_singly_ll.__repr__() == correct
+
+
+def test_repr_filled_double_ll(filled_doubly_ll):
+    correct = '«' + ' <--> '.join([f"'{val}'" if isinstance(val, str) else str(val) for val in INITIAL_VALUES]) + '»'
+    assert filled_doubly_ll.__repr__() == correct
+
+
+# Tests on LLItemsAccessMethods class.
+def test_getitem_in_range(filled_ll, in_range_index):
+    assert filled_ll[in_range_index] == INITIAL_VALUES[in_range_index]
+
+
+def test_getitem_out_of_range_raise_error(filled_ll, out_of_range_index):
+    with pytest.raises(IndexError):
+        non_existing_value = filled_ll[out_of_range_index]
+
+
+def test_setitem_in_range(filled_ll, in_range_index):
+    filled_ll[in_range_index] = 'NEW'
+    assert filled_ll[in_range_index] == 'NEW'
+
+
+def test_setitem_out_of_range_raise_error(filled_ll, out_of_range_index):
+    with pytest.raises(IndexError):
+        filled_ll[out_of_range_index] = 'NEW'
+
+
+# Tests on SinglyLinkedList and DoublyLinkedList classes.
+def test_add_value_to_empty_ll_updates_first_link(empty_ll):
+    empty_ll.add('First value')
+    assert empty_ll.first.value == 'First value'
+
+
+def test_add_value_to_filled_ll(filled_ll):
+    filled_ll.add('New value')
+    assert len(filled_ll) == len(INITIAL_VALUES) + 1
+
+
+def test_insert_value_in_empty_ll_updates_first_link(empty_ll):
+    empty_ll.insert('First value', 0)
+    assert empty_ll.first.value == 'First value'
+
+
+@pytest.mark.parametrize('index', list(range(0, len(INITIAL_VALUES))))
+def test_insert_by_not_negative_index_in_filled_ll(filled_ll, index):
+    filled_ll.insert('New value', index)
+    assert filled_ll[index] == 'New value'
+
+
+@pytest.mark.parametrize('index', list(range(-len(INITIAL_VALUES), 0)))
+def test_insert_by_negative_index_in_filled_ll(filled_ll, index):
+    filled_ll.insert('New value', index)
+    assert filled_ll[index-1] == 'New value'
+
+
+def test_pop_without_index_returns_correct_value(filled_ll):
+    assert filled_ll.pop() == INITIAL_VALUES[0]
+
+
+def test_pop_with_index_returns_correct_value(filled_ll, in_range_index):
+    assert filled_ll.pop(in_range_index) == INITIAL_VALUES[in_range_index]
+
+
+def test_pop_with_out_of_range_index_raise_error(filled_ll, out_of_range_index):
+    with pytest.raises(IndexError):
+        filled_ll.pop(out_of_range_index)
+
+
+def test_first_link_switches_after_pop_first_value(filled_ll):
+    filled_ll.pop()
+    assert filled_ll.first.value == INITIAL_VALUES[1]
+
+
+def test_last_link_switches_after_pop_last_value(filled_doubly_ll):
+    filled_doubly_ll.pop(-1)
+    assert filled_doubly_ll.last.value == INITIAL_VALUES[-2]
+
+
+def test_first_link_points_to_none_after_pop_the_only_value(empty_ll):
+    empty_ll.add('The one and only')
+    empty_ll.pop()
+    assert empty_ll.first is None
+
+
+def test_last_link_points_to_none_after_pop_the_only_value():
+    doubly_ll = DoublyLinkedList(['The one and only'])
+    doubly_ll.pop()
+    assert doubly_ll.last is None
+
+
+def test_len_decreases_by_1_after_pop(filled_ll, in_range_index):
+    filled_ll.pop(in_range_index)
+    assert len(filled_ll) == len(INITIAL_VALUES) - 1
