@@ -25,14 +25,14 @@ True
 
 Doubly linked list usage example:
 --------
->> dll = DoublyLinkedList(['start', 21, (1, 2, 3)])
+>> dll = DoublyLinkedList(['text', 21, (1, 2, 3)])
 >> dll
-«'start' <--> 21 <--> (1, 2, 3)»
->> dll.add('end')                   # «'start' <--> 21 <--> (1, 2, 3) <--> 'end'»
->> dll.insert('penultimate', -1)    # «'start' <--> 21 <--> (1, 2, 3) <--> 'penultimate' <--> 'end'»
->> dll.pop()                        # «'start' <--> 21 <--> (1, 2, 3) <--> 'penultimate'»
-'end'
->> dll[2] = ()                      # «'start' <--> 21 <--> () <--> 'penultimate'»
+«(1, 2, 3) <--> 21 <--> 'text'»
+>> dll.add('start')                 # «'start' <--> (1, 2, 3) <--> 21 <--> 'text'»
+>> dll.insert('penultimate', -1)    # «'start' <--> (1, 2, 3) <--> 21 <--> 'penultimate' <--> 'text'»
+>> dll.pop()                        # «(1, 2, 3) <--> 21 <--> 'penultimate' <--> 'text'»
+'start'
+>> dll[0] = ()                      # «() <--> 21 <--> 'penultimate' <--> 'text'»
 >> dll[1]
 21
 >> 34 in dll
@@ -256,14 +256,13 @@ class DoublyLinkedList(LLCommonMethods, LLItemsAccessMethods):
         return cur_node
 
     def add(self, value):
-        """Adds element in the end of the list. O(1) time complexity."""
-        prev_node = self.last
-        self.last = DLLNode(value, prev_node, None)
-
-        if prev_node:
-            prev_node.next = self.last
+        """Adds element in the front of the list. O(1) time complexity."""
+        next_node = self.first
+        self.first = DLLNode(value, None, next_node)
+        if next_node:
+            next_node.prev = self.first
         else:
-            self.first = self.last
+            self.last = self.first
 
         self._length += 1
 
@@ -299,15 +298,15 @@ class DoublyLinkedList(LLCommonMethods, LLItemsAccessMethods):
 
         self._length += 1
 
-    def pop(self, index=None):
+    def pop(self, index=0):
         """
-        Basically behaves the same as list.pop() in python.
+        Basically behaves the same as list.pop() in python,
+        but by default removes first element instead of last.
+        (For more similar behaviour with SinglyLinkedList).
         Removes the node at required index from the list and returns it's value.
         If node with required index doesn't exist, IndexError will be raised.
         If index is not provided - remove last node and returns it's value. O(1) time complexity in this case.
         """
-        index = self._length - 1 if index is None else index
-
         if self._length == 0:
             raise IndexError('List is empty.')
         elif not (-self._length <= index <= self._length - 1):
