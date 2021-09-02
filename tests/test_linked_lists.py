@@ -3,14 +3,13 @@ Tests for LLCommonMethods, LLItemsAccessMethods,
 SinglyLinkedList and DoublyLinkedList classes.
 Almost all methods in SinglyLinkedList and DoublyLinkedList
 classes have slightly different implementation, but same purpose,
-so most of the tests run both linked list objects at time.
+so most of the tests run both - singly and doubly linked lists objects at time.
 """
 # ll - shortcut for linked list.
 import pytest
 from algorithms.linked_lists import SinglyLinkedList, DoublyLinkedList
 
 
-# Values placed in filled linked list on creation.
 INITIAL_VALUES = ['Hello', 21, True, (1, 2, 3)]
 
 
@@ -22,7 +21,7 @@ def in_range_index(request):
 
 @pytest.fixture(params=[-len(INITIAL_VALUES)-1, len(INITIAL_VALUES)])
 def out_of_range_index(request):
-    # Set of indexes too small or too big to refer to the ll values.
+    # Set of indexes that are out of ll range.
     return request.param
 
 
@@ -106,7 +105,7 @@ def test_getitem_in_range(filled_ll, in_range_index):
 
 def test_getitem_out_of_range_raise_error(filled_ll, out_of_range_index):
     with pytest.raises(IndexError):
-        non_existing_value = filled_ll[out_of_range_index]
+        filled_ll[out_of_range_index]
 
 
 def test_setitem_in_range(filled_ll, in_range_index):
