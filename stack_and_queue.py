@@ -100,7 +100,7 @@ class Stack(LLCommonMethods):
         Returns top element's value.
         Returns None if Stack is empty.
         """
-        return self.top.value
+        return self.top.value if self.top is not None else None
 
 
 class Queue(LLCommonMethods):
@@ -162,11 +162,11 @@ class Queue(LLCommonMethods):
         Returns first element's value.
         Returns None if queue is empty.
         """
-        return self.first.value
+        return self.first.value if self.first is not None else None
 
     def rear(self):
         """
         Returns last element's value.
         Returns None if queue is empty.
         """
-        return self.last.value
+        return self.last.value if self.last is not None else None
