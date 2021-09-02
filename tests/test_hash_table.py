@@ -4,9 +4,9 @@ Three tables are used for testing:
 1) Empty hash table. Used in several tests
 where it doesn't really matter is it filled or not,
 or there it should be empty.
-2) Hash table with collisions and hash table without collisions.
+2, 3) Hash table with collisions and hash table without collisions.
 These two are main testing objects, and almost every single test in this module
-runs both of them, to ensure all methods works correctly in both cases.
+runs both of them to ensure all methods works correctly in both cases.
 """
 import pytest
 from algorithms.hash_table import HashTable
@@ -44,10 +44,10 @@ def filled_table(request):
     return request.getfixturevalue(request.param)
 
 
-# Tests starts here.
+# Tests.
 def test_filled_table_with_collisions(filled_table_with_collisions):
     """Checks if this table has collisions."""
-    # Filled cells number is less than items amount.
+    # Filled cells number is less than items number.
     filled_cells = [cell for cell in filled_table_with_collisions.array if cell is not None]
     assert len(filled_cells) < len(INITIAL_ITEMS)
 
@@ -77,7 +77,7 @@ def test_hash_is_lower_than_capacity(empty_table, key):
 
 
 @pytest.mark.parametrize('non_iterable', [12, True, False, 0, 2.5, None])
-def test_build_hash_table_with_non_iterable_argument(non_iterable):
+def test_build_hash_table_with_non_iterable_argument_raise_error(non_iterable):
     with pytest.raises(TypeError):
         HashTable(non_iterable)
 
@@ -88,8 +88,8 @@ def test_build_hash_table_with_non_iterable_argument(non_iterable):
     {1, 2, 3, 4},
     [(1, 2), (3, 4), (5, )]
 ])
-def test_build_hash_table_with__wrong_format_argument(wrong_iterable):
-    # Correct format is a sequence of 2-items tuples or dict.
+def test_build_hash_table_with__wrong_format_argument_raise_error(wrong_iterable):
+    # Correct format is a dict or sequence of 2-items tuples.
     with pytest.raises(TypeError):
         HashTable(wrong_iterable)
 
@@ -199,7 +199,7 @@ def test_increase_capacity(filled_table):
     # Current len(self.array) = 4 for table_with_collisions
     # and 5 for table_without_collisions.
     # Each table contains 3 items,
-    # So at both tables load_factor is not more than 0.75.
+    # So in both tables load_factor is not more than 0.75.
     # After adding 1 item, both tables load_factor will exceed 0.75,
     # (border value by default), so capacity will be doubled.
     initial_capacity = len(filled_table.array)
