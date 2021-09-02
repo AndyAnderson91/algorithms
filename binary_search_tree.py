@@ -24,12 +24,16 @@ Usage example:
 #        0
 #      /
 #    -2
+>> b.root.left.left.left
+-2 <-- 0 --> None
 >> b.balance()
 #                 3
 #               /   \
 #             0      5
 #           / \     /
 #         -2   1   4
+>> b.root
+0 <-- 3 --> 5
 >> b.remove(0)
 #                 3
 #               /   \
@@ -114,35 +118,50 @@ class BinarySearchTree:
             sorted_values = sorted(list(iterable))
             create_nodes(sorted_values)
 
-    def _get_parent_node(self, value, subtree_root):
-        """Support method that is used in add/remove methods."""
-        if not subtree_root or subtree_root.value == value:
+    def _get_parent_node(self, child_value, subtree_root):
+        """
+        Return parent node by requested child's value.
+        Traversal starts from a subtree_root.
+        Support method that is used in add/remove methods.
+        """
+        if not subtree_root or subtree_root.value == child_value:
             # For subtree_root = self.root cases.
             return None
 
-        elif value < subtree_root.value and subtree_root.left and value != subtree_root.left.value:
-            return self._get_parent_node(value, subtree_root.left)
-        elif value > subtree_root.value and subtree_root.right and value != subtree_root.right.value:
-            return self._get_parent_node(value, subtree_root.right)
+        elif child_value < subtree_root.value and subtree_root.left and child_value != subtree_root.left.value:
+            return self._get_parent_node(child_value, subtree_root.left)
+        elif child_value > subtree_root.value and subtree_root.right and child_value != subtree_root.right.value:
+            return self._get_parent_node(child_value, subtree_root.right)
         else:
             return subtree_root
 
-    def _get_node(self, value, parent):
+    def _get_node(self, value, subtree_root):
         """
-        Returns node with required value.
-        Traversal starts from it's parent node.
+        Return node by requested value.
+        Traversal starts from a subtree_root.
+        Support method that is used in exists/remove methods.
         """
-        if not parent and self.root and value == self.root.value:
+        # This method may be used after _get_parent_node method,
+        # then parent_node is passed here as 'subtree_root' argument,
+        # so there is no need to traverse from the root of the tree.
+        # subtree_root argument can be None in 2 cases:
+        # 1) On first (non-recursive) call if desired node is root (root's parent is None)
+        # 2) In recursive call if desired node doesn't exist.
+        if subtree_root is None and self.root and value == self.root.value:
             return self.root
-        elif parent and parent.left and value == parent.left.value:
-            return parent.left
-        elif parent and parent.right and value == parent.right.value:
-            return parent.right
+
+        if subtree_root and subtree_root.value < value:
+            return self._get_node(value, subtree_root.right)
+        elif subtree_root and subtree_root.value > value:
+            return self._get_node(value, subtree_root.left)
+        else:
+            return subtree_root
 
     @staticmethod
     def _get_successor_node(node):
         """
-        Returns node with a next largest value from the given node.
+        Returns node with a next largest value to a given node.
+        Search for it in a subtree, where given node is a root.
         Used in remove method.
         """
         if node is None:
@@ -166,8 +185,7 @@ class BinarySearchTree:
 
     def exists(self, value):
         """Returns True if node with required value is in a tree."""
-        parent_node = self._get_parent_node(value, self.root)
-        return bool(self._get_node(value, parent_node))
+        return bool(self._get_node(value, self.root))
 
     def add(self, value):
         """Appends node with a given value to the tree."""
@@ -185,13 +203,21 @@ class BinarySearchTree:
         self._length += 1
 
     def remove(self, value):
-        """Removes node with required value from a tree."""
+        """
+        Removes node with required value from a tree.
+        Tree configuration is changing according to cases:
+        1) If node to remove is a leaf, it's parent link redirects to None.
+        2) If node to remove has one child, it's parent link redirects to a child.
+        3) If node to remove has two children, it's replaced by a node with successor value, founded in it's subtree.
+        (Node with successor value will be moved to the place where node to remove existed before).
+        """
         parent_node = self._get_parent_node(value, self.root)
         node_to_remove = self._get_node(value, parent_node)
 
         if not node_to_remove:
             raise ValueError('{0} is not in binary search tree'.format(value))
 
+        # First case.
         if node_to_remove.is_leaf():
             if node_to_remove == self.root:
                 self.root = None
@@ -200,6 +226,7 @@ class BinarySearchTree:
             else:
                 parent_node.right = None
 
+        # Second case.
         elif node_to_remove.has_one_child_only():
             child_node = node_to_remove.left if node_to_remove.left else node_to_remove.right
             if node_to_remove == self.root:
@@ -209,11 +236,13 @@ class BinarySearchTree:
             else:
                 parent_node.right = child_node
 
+        # Third case.
         else:
-            # Node to remove has 2 children case.
-            # Replaces removed node by a node with next larger value.
             successor_node = self._get_successor_node(node_to_remove)
             self.remove(successor_node.value)
+            # Successor node will be removed from it's place,
+            # but not from a tree, so need to compensate length's loss.
+            self._length += 1
 
             if node_to_remove == self.root:
                 self.root = successor_node
