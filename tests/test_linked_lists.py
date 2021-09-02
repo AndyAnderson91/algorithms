@@ -1,6 +1,9 @@
 """
 Tests for LLCommonMethods, LLItemsAccessMethods,
 SinglyLinkedList and DoublyLinkedList classes.
+Almost all methods in SinglyLinkedList and DoublyLinkedList
+classes have slightly different implementation, but same purpose,
+so most of the tests run both linked list objects at time.
 """
 # ll - shortcut for linked list.
 import pytest
@@ -44,12 +47,10 @@ def filled_doubly_ll():
     return DoublyLinkedList(reversed(INITIAL_VALUES))
 
 
-@pytest.fixture(params=[SinglyLinkedList, DoublyLinkedList])
+@pytest.fixture(params=['filled_singly_ll',
+                        'filled_doubly_ll'])
 def filled_ll(request):
-    # By default add() method inserts new value in the front of the list,
-    # So to build linked list with similar indexing as in iterable argument,
-    # It should be passed in class in reversed order.
-    return request.param(reversed(INITIAL_VALUES))
+    return request.getfixturevalue(request.param)
 
 
 # Tests on LLCommonMethod class.
