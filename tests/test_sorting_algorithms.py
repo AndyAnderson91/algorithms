@@ -1,15 +1,17 @@
+"""
+Tests for sorting algorithms.
+"""
 import pytest
 from algorithms.sorting_algorithms import *
 
 
-sorting_functions = [bubble_sort,
-                     selection_sort,
-                     insertion_sort,
-                     merge_sort,
-                     quick_sort]
-
-
-@pytest.fixture(params=sorting_functions)
+@pytest.fixture(params=[
+    bubble_sort,
+    selection_sort,
+    insertion_sort,
+    merge_sort,
+    quick_sort
+])
 def sorting_function(request):
     return request.param
 
