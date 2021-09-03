@@ -1,5 +1,7 @@
 """
 Tests for sorting algorithms.
+All functions have identical input and output,
+so same tests are used for all functions.
 """
 import pytest
 from algorithms.sorting_algorithms import *

@@ -1,3 +1,8 @@
+"""
+Tests on binary search functions.
+Both implementations have identical input and output,
+so same tests are used for both functions.
+"""
 import pytest
 from algorithms.binary_search import binary_search_iterative, binary_search_recursive
 
