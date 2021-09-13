@@ -9,7 +9,7 @@ These two are main testing objects, and almost every single test in this module
 runs both of them to ensure all methods works correctly in both cases.
 """
 import pytest
-from algorithms.hash_table import HashTable
+from hash_table import HashTable
 
 
 # Items placed in filled hash table on creation.

@@ -4,7 +4,7 @@ Both function accepts graph represented as adjacency list.
 """
 
 
-from algorithms.stack_and_queue import Stack, Queue
+from stack_and_queue import Stack, Queue
 
 
 def breadth_first_search(adj_list, start, finish=None):

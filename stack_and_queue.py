@@ -39,7 +39,7 @@ True
 >> len(q)
 3
 """
-from algorithms.linked_lists import SLLNode, DLLNode, LLCommonMethods
+from linked_lists import SLLNode, DLLNode, LLCommonMethods
 
 
 class Stack(LLCommonMethods):

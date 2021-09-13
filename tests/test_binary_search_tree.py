@@ -10,7 +10,7 @@ and almost every single test in this module runs both of them
 to ensure all methods works correctly in both cases.
 """
 import pytest
-from algorithms.binary_search_tree import BSTNode, BinarySearchTree
+from binary_search_tree import BSTNode, BinarySearchTree
 
 
 INITIAL_VALUES = [5, 4, -2, 6, 7, 1]

@@ -4,10 +4,10 @@ SinglyLinkedList and DoublyLinkedList classes.
 Almost all methods in SinglyLinkedList and DoublyLinkedList
 classes have slightly different implementation, but same purpose,
 so most of the tests run both - singly and doubly linked lists objects at time.
+ll - shortcut for linked list.
 """
-# ll - shortcut for linked list.
 import pytest
-from algorithms.linked_lists import SinglyLinkedList, DoublyLinkedList
+from linked_lists import SinglyLinkedList, DoublyLinkedList
 
 
 INITIAL_VALUES = ['Hello', 21, True, (1, 2, 3)]

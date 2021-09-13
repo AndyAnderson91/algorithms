@@ -4,7 +4,7 @@ Inherited methods are tested in 'test_linked_lists' module.
 """
 
 import pytest
-from algorithms.stack_and_queue import Stack, Queue
+from stack_and_queue import Stack, Queue
 
 
 INITIAL_VALUES = ['Hello', 21, True, (1, 2, 3)]

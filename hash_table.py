@@ -41,7 +41,7 @@ Example on collision resolution:
 # Capacity doubles if load_factor > 0.75.
 >> h.add('bar', 3)                    # h.array: [None, None, None, None, «['bar', 3]», «['hello', 1] --> ['world', 2]»]
 """
-from algorithms.linked_lists import SinglyLinkedList
+from linked_lists import SinglyLinkedList
 
 
 class HashTable:

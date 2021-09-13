@@ -4,7 +4,7 @@ All functions have identical input and output,
 so same tests are used for all functions.
 """
 import pytest
-from algorithms.sorting_algorithms import *
+from sorting_algorithms import bubble_sort, selection_sort, insertion_sort, merge_sort, quick_sort
 
 
 @pytest.fixture(params=[

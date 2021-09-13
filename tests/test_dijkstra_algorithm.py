@@ -3,7 +3,7 @@ Tests on Dijkstra algorithm.
 Graphs are represented as adjacency matrices.
 """
 import pytest
-from algorithms.dijkstra_algorithm import dijkstra
+from dijkstra_algorithm import dijkstra
 
 
 # Connected graphs.

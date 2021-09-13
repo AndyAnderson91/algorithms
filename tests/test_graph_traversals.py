@@ -3,7 +3,7 @@ Tests on BFS and DFS algorithms.
 Graphs are represented as adjacency lists.
 """
 import pytest
-from algorithms.graph_traversals import breadth_first_search, depth_first_search
+from graph_traversals import breadth_first_search, depth_first_search
 
 
 # Connected graphs.
