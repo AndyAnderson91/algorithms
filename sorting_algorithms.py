@@ -1,4 +1,17 @@
+"""
+Contains following sorting algorithms:
+- Bubble sort;
+- Selection sort;
+- Insertion sort;
+- Merge sort;
+- Quicksort.
+"""
+
+
 def bubble_sort(array):
+    """
+    In-place implementation.
+    """
     check_again = True
     i = 0
     while check_again:
@@ -11,8 +24,10 @@ def bubble_sort(array):
 
 
 def selection_sort(array):
+    """
+    In-place implementation.
+    """
     for i in range(len(array) - 1):
-        # Current iteration's minimum value and it's index.
         cur_min, cur_min_index = array[i], i
 
         for j in range(i + 1, len(array)):
@@ -23,6 +38,9 @@ def selection_sort(array):
 
 
 def insertion_sort(array):
+    """
+    In-place implementation.
+    """
     for i in range(1, len(array)):
         k = i
         while k > 0 and array[k] < array[k-1]:
@@ -31,7 +49,9 @@ def insertion_sort(array):
 
 
 def merge_sort(array):
-
+    """
+    Out-of-place implementation.
+    """
     def merge(array1, array2):
         i, j = 0, 0
         result = []
@@ -61,6 +81,9 @@ def merge_sort(array):
 
 
 def quick_sort(array):
+    """
+    Out-of-place implementation.
+    """
     if len(array) <= 1:
         return array
     else:
