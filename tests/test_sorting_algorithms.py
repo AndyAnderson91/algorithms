@@ -1,8 +1,9 @@
 """
 Tests for sorting algorithms.
 """
+
 import pytest
-from sorting_algorithms import bubble_sort, selection_sort, insertion_sort, merge_sort, quick_sort
+from algorithms.sorting_algorithms import bubble_sort, selection_sort, insertion_sort, merge_sort, quick_sort
 
 
 # Constants

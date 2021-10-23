@@ -1,16 +1,21 @@
 """
-Tests on binary search functions.
+Tests for binary search functions.
 Both implementations have identical input and output,
 so same tests are used for both functions.
 """
-import pytest
-from binary_search import binary_search_iterative, binary_search_recursive
 
+import pytest
+from algorithms.binary_search import binary_search_iterative, binary_search_recursive
+
+
+# Local fixtures.
 
 @pytest.fixture(params=[binary_search_iterative, binary_search_recursive])
 def binary_search_function(request):
     return request.param
 
+
+# Tests.
 
 @pytest.mark.parametrize('array, value', [
     ([2], 2),

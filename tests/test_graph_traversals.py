@@ -2,16 +2,19 @@
 Tests on BFS and DFS algorithms.
 Graphs are represented as adjacency lists.
 """
+
 import pytest
-from graph_traversals import breadth_first_search, depth_first_search
+from algorithms.graph_traversals import breadth_first_search, depth_first_search
 
 
 # Connected graphs.
+
 GRAPH1 = [[1], [0]]
 GRAPH2 = [[1, 2], [2], [0, 1]]
 GRAPH3 = [[1, 2], [0, 4], [0, 3, 4], [2, 4], [1, 2, 3]]
 
 # Disconnected graphs.
+
 GRAPH4 = [[1], [0], []]
 GRAPH5 = [[1, 2], [2], [0], [4], []]
 

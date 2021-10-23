@@ -4,11 +4,15 @@ Inherited methods are tested in 'test_linked_lists' module.
 """
 
 import pytest
-from stack_and_queue import Stack, Queue
+from algorithms.stack_and_queue import Stack, Queue
 
+
+# Constants.
 
 INITIAL_VALUES = ['Hello', 21, True, (1, 2, 3)]
 
+
+# Local fixtures.
 
 @pytest.fixture
 def empty_stack():
@@ -31,6 +35,7 @@ def filled_queue():
 
 
 # Stack tests.
+
 def test_create_empty_stack():
     assert Stack().top is None
 
@@ -103,6 +108,7 @@ def test_peek_return_top_value_of_stack(filled_stack):
 
 
 # Queue tests.
+
 def test_create_empty_queue():
     assert Queue()._length == 0
 

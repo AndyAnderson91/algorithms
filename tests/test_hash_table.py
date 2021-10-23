@@ -8,20 +8,19 @@ or there it should be empty.
 These two are main testing objects, and almost every single test in this module
 runs both of them to ensure all methods works correctly in both cases.
 """
+
 import pytest
-from hash_table import HashTable
+from algorithms.hash_table import HashTable
 
 
-# Items placed in filled hash table on creation.
+# Constants.
+
 INITIAL_ITEMS = [('one', 1), ('two', 2), ('three', 3)]
-# For more convenience.
 INITIAL_KEYS = [item[0] for item in INITIAL_ITEMS]
-# List of keys that are not present in hash table.
 NON_EXISTING_KEYS = [12, 'abc', True, None]
-# List of objects that can be hashed.
-HASHABLE_KEYS = [1, 345, 567821345, 0, -12, 'text', '',
-                 (1, 2, 3, 4), (), True, False, None]
 
+
+# Local fixtures.
 
 @pytest.fixture
 def empty_table():
@@ -45,6 +44,7 @@ def filled_table(request):
 
 
 # Tests.
+
 def test_filled_table_with_collisions(filled_table_with_collisions):
     """Checks if this table has collisions."""
     # Filled cells number is less than items number.
@@ -59,7 +59,7 @@ def test_filled_table_without_collisions(filled_table_without_collisions):
     assert len(filled_cells) == len(INITIAL_ITEMS)
 
 
-@pytest.mark.parametrize('key', HASHABLE_KEYS)
+@pytest.mark.parametrize('key', [1, 345, 567821345, 0, -12, 'text', '', (1, 2, 3, 4), (), True, False, None])
 def test_hashing_of_hashable_keys(empty_table, key):
     assert isinstance(empty_table._hash(key), int)
 
@@ -71,7 +71,7 @@ def test_hashing_of_unhashable_keys_raise_error(empty_table, key):
         empty_table._hash(key)
 
 
-@pytest.mark.parametrize('key', HASHABLE_KEYS)
+@pytest.mark.parametrize('key', INITIAL_KEYS)
 def test_hash_is_lower_than_capacity(empty_table, key):
     assert empty_table._hash(key) < len(empty_table.array)
 

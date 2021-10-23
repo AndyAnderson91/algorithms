@@ -6,24 +6,19 @@ classes have slightly different implementation, but same purpose,
 so most of the tests run both - singly and doubly linked lists objects at time.
 ll - shortcut for linked list.
 """
-import pytest
-from linked_lists import SinglyLinkedList, DoublyLinkedList
 
+import pytest
+from algorithms.linked_lists import SinglyLinkedList, DoublyLinkedList
+
+
+# Constants.
 
 INITIAL_VALUES = ['Hello', 21, True, (1, 2, 3)]
+IN_RANGE_INDEXES = range(-len(INITIAL_VALUES), len(INITIAL_VALUES))
+OUT_OF_RANGE_INDEXES = [-len(INITIAL_VALUES)-1, len(INITIAL_VALUES)]
 
 
-@pytest.fixture(params=range(-len(INITIAL_VALUES), len(INITIAL_VALUES)))
-def in_range_index(request):
-    # Set of indexes used to refer to the ll values.
-    return request.param
-
-
-@pytest.fixture(params=[-len(INITIAL_VALUES)-1, len(INITIAL_VALUES)])
-def out_of_range_index(request):
-    # Set of indexes that are out of ll range.
-    return request.param
-
+# Local fixtures.
 
 @pytest.fixture(params=[SinglyLinkedList, DoublyLinkedList])
 def empty_ll(request):
@@ -53,6 +48,7 @@ def filled_ll(request):
 
 
 # Tests on LLCommonMethod class.
+
 @pytest.mark.parametrize('ll_class, arg', [
     (SinglyLinkedList, 123),
     (DoublyLinkedList, True),
@@ -99,26 +95,32 @@ def test_repr_filled_double_ll(filled_doubly_ll):
 
 
 # Tests on LLItemsAccessMethods class.
+
+@pytest.mark.parametrize('in_range_index', IN_RANGE_INDEXES)
 def test_getitem_in_range(filled_ll, in_range_index):
     assert filled_ll[in_range_index] == INITIAL_VALUES[in_range_index]
 
 
+@pytest.mark.parametrize('out_of_range_index', OUT_OF_RANGE_INDEXES)
 def test_getitem_out_of_range_raise_error(filled_ll, out_of_range_index):
     with pytest.raises(IndexError):
         filled_ll[out_of_range_index]
 
 
+@pytest.mark.parametrize('in_range_index', IN_RANGE_INDEXES)
 def test_setitem_in_range(filled_ll, in_range_index):
     filled_ll[in_range_index] = 'NEW'
     assert filled_ll[in_range_index] == 'NEW'
 
 
+@pytest.mark.parametrize('out_of_range_index', OUT_OF_RANGE_INDEXES)
 def test_setitem_out_of_range_raise_error(filled_ll, out_of_range_index):
     with pytest.raises(IndexError):
         filled_ll[out_of_range_index] = 'NEW'
 
 
 # Tests on SinglyLinkedList and DoublyLinkedList classes.
+
 def test_add_value_to_empty_ll_updates_first_link(empty_ll):
     empty_ll.add('First value')
     assert empty_ll.first.value == 'First value'
@@ -150,10 +152,12 @@ def test_pop_without_index_returns_correct_value(filled_ll):
     assert filled_ll.pop() == INITIAL_VALUES[0]
 
 
+@pytest.mark.parametrize('in_range_index', IN_RANGE_INDEXES)
 def test_pop_with_index_returns_correct_value(filled_ll, in_range_index):
     assert filled_ll.pop(in_range_index) == INITIAL_VALUES[in_range_index]
 
 
+@pytest.mark.parametrize('out_of_range_index', OUT_OF_RANGE_INDEXES)
 def test_pop_with_out_of_range_index_raise_error(filled_ll, out_of_range_index):
     with pytest.raises(IndexError):
         filled_ll.pop(out_of_range_index)
@@ -181,6 +185,7 @@ def test_last_link_points_to_none_after_pop_the_only_value():
     assert doubly_ll.last is None
 
 
+@pytest.mark.parametrize('in_range_index', IN_RANGE_INDEXES)
 def test_len_decreases_by_1_after_pop(filled_ll, in_range_index):
     filled_ll.pop(in_range_index)
     assert len(filled_ll) == len(INITIAL_VALUES) - 1

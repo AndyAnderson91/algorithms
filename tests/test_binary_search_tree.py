@@ -5,17 +5,22 @@ Three binary search trees are used for testing:
 where it doesn't really matter if it's filled or not,
 of there it should be empty.
 2, 3) Balanced and unbalanced filled binary search trees.
-These two are main testing objects,
+These two trees are main testing objects,
 and almost every single test in this module runs both of them
 to ensure all methods works correctly in both cases.
 """
-import pytest
-from binary_search_tree import BSTNode, BinarySearchTree
 
+import pytest
+from algorithms.binary_search_tree import BSTNode, BinarySearchTree
+
+
+# Constants.
 
 INITIAL_VALUES = [5, 4, -2, 6, 7, 1]
 SORTED_INITIAL_VALUES = sorted(INITIAL_VALUES)
 
+
+# Local fixtures.
 
 @pytest.fixture
 def empty_tree():
@@ -41,6 +46,7 @@ def filled_tree(request):
 
 
 # BSTNode class tests.
+
 @pytest.mark.parametrize('value', INITIAL_VALUES)
 def test_node_creation(value):
     assert BSTNode(value).value == value
@@ -84,6 +90,7 @@ def test_node_has_one_child_only_false(left, right):
 
 
 # BinarySearchTree class tests.
+
 def test_build_empty_tree():
     assert BinarySearchTree().root is None
 
