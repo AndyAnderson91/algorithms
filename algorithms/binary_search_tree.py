@@ -1,4 +1,4 @@
-"""
+r"""
 Binary search tree implementation.
 
 Usage example:
