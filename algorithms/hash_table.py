@@ -235,7 +235,7 @@ class HashTable:
                 if item[0] == key:
                     value = self._array[index].pop(i)[1]
 
-                    if not self._array[index].first:
+                    if not len(self._array[index]):
                         self._array[index] = None
 
                     self._length -= 1
