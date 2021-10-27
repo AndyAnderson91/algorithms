@@ -92,12 +92,12 @@ def test_node_has_one_child_only_false(left, right):
 # BinarySearchTree class tests.
 
 def test_build_empty_tree():
-    assert BinarySearchTree().root is None
+    assert BinarySearchTree()._root is None
 
 
 @pytest.mark.parametrize('value', INITIAL_VALUES)
 def test_build_one_node_tree(value):
-    assert BinarySearchTree([value]).root.value == value
+    assert BinarySearchTree([value])._root.value == value
 
 
 @pytest.mark.parametrize('values', [
@@ -112,7 +112,7 @@ def test_build_tree_with_duplicates_raise_error(values):
 
 def test_build_binary_search_tree_put_mid_value_in_root():
     mid_value = SORTED_INITIAL_VALUES[len(INITIAL_VALUES)//2]
-    assert BinarySearchTree(INITIAL_VALUES).root.value == mid_value
+    assert BinarySearchTree(INITIAL_VALUES)._root.value == mid_value
 
 
 def test_build_binary_search_tree_put_values_in_correct_order():
@@ -151,7 +151,7 @@ def test_repr(filled_tree):
     (7, 5)
 ])
 def test_get_parent_node_in_balanced_tree(balanced_tree, child, parent):
-    assert balanced_tree._get_parent_node(child, balanced_tree.root).value == parent
+    assert balanced_tree._get_parent_node(child, balanced_tree._root).value == parent
 
 
 @pytest.mark.parametrize('child, parent', [
@@ -162,16 +162,16 @@ def test_get_parent_node_in_balanced_tree(balanced_tree, child, parent):
     (1, -2)
 ])
 def test_get_parent_node_in_unbalanced_tree(unbalanced_tree, child, parent):
-    assert unbalanced_tree._get_parent_node(child, unbalanced_tree.root).value == parent
+    assert unbalanced_tree._get_parent_node(child, unbalanced_tree._root).value == parent
 
 
 def test_get_parent_node_return_none_for_root(filled_tree):
-    assert filled_tree._get_parent_node(filled_tree.root.value, filled_tree.root) is None
+    assert filled_tree._get_parent_node(filled_tree._root.value, filled_tree._root) is None
 
 
 @pytest.mark.parametrize('value', INITIAL_VALUES)
 def test_get_node_return_node_with_requested_value(filled_tree, value):
-    assert filled_tree._get_node(value, filled_tree.root).value == value
+    assert filled_tree._get_node(value, filled_tree._root).value == value
 
 
 @pytest.mark.parametrize('value', INITIAL_VALUES)
@@ -182,14 +182,14 @@ def test_get_node_after_get_parent_node(filled_tree, value):
     # instead of searching for each node separately from the root,
     # so it's reasonable to test how _get_parent_node
     # and _get_node methods works one after another.
-    parent_node = filled_tree._get_parent_node(value, filled_tree.root)
+    parent_node = filled_tree._get_parent_node(value, filled_tree._root)
     child_node = filled_tree._get_node(value, parent_node)
     assert child_node.value == value
 
 
 @pytest.mark.parametrize('value', SORTED_INITIAL_VALUES)
 def test_get_existing_successor_node(filled_tree, value):
-    current_node = filled_tree._get_node(value, filled_tree.root)
+    current_node = filled_tree._get_node(value, filled_tree._root)
     if current_node.right:
         successor_index = SORTED_INITIAL_VALUES.index(value) + 1
         successor_value = SORTED_INITIAL_VALUES[successor_index]
@@ -198,7 +198,7 @@ def test_get_existing_successor_node(filled_tree, value):
 
 @pytest.mark.parametrize('value', SORTED_INITIAL_VALUES)
 def test_get_non_existing_successor_node_return_none(filled_tree, value):
-    current_node = filled_tree._get_node(value, filled_tree.root)
+    current_node = filled_tree._get_node(value, filled_tree._root)
     if current_node.right is None:
         assert filled_tree._get_successor_node(current_node) is None
 
@@ -210,9 +210,9 @@ def test_get_successor_node_of_none_raise_error(filled_tree):
 
 def test_balance_method_rebuild_tree_as_balanced(unbalanced_tree, balanced_tree):
     unbalanced_tree.balance()
-    unb_root, bal_root = unbalanced_tree.root.value, balanced_tree.root.value
-    unb_left, bal_left = unbalanced_tree.root.left.value, balanced_tree.root.left.value
-    unb_right, bal_right = unbalanced_tree.root.right.value, balanced_tree.root.right.value
+    unb_root, bal_root = unbalanced_tree._root.value, balanced_tree._root.value
+    unb_left, bal_left = unbalanced_tree._root.left.value, balanced_tree._root.left.value
+    unb_right, bal_right = unbalanced_tree._root.right.value, balanced_tree._root.right.value
     assert (unb_root, unb_left, unb_right) == (bal_root, bal_left, bal_right)
 
 
@@ -228,7 +228,7 @@ def test_exists_false(filled_tree):
 @pytest.mark.parametrize('value', INITIAL_VALUES)
 def test_first_added_value_accessible_via_root_link(empty_tree, value):
     empty_tree.add(value)
-    assert empty_tree.root.value == value
+    assert empty_tree._root.value == value
 
 
 def test_add_new_value_increase_length(filled_tree):
@@ -248,7 +248,7 @@ def test_add_duplicate_raise_error(filled_tree, value):
     (5.5, 6.5, 6)
 ])
 def test_added_children_accessible_via_left_and_right_parent_link(balanced_tree, left, right, parent):
-    parent_node = balanced_tree._get_node(parent, balanced_tree.root)
+    parent_node = balanced_tree._get_node(parent, balanced_tree._root)
     balanced_tree.add(left)
     balanced_tree.add(right)
     assert (parent_node.left.value, parent_node.right.value) == (left, right)
@@ -274,7 +274,7 @@ def test_remove_non_existing_value_raise_error(filled_tree, value):
 
 @pytest.mark.parametrize('value', [-2, 4, 6])
 def test_removed_leaf_parent_link_redirected_to_none(balanced_tree, value):
-    parent_node = balanced_tree._get_parent_node(value, balanced_tree.root)
+    parent_node = balanced_tree._get_parent_node(value, balanced_tree._root)
     balanced_tree.remove(value)
     link_removed_leaf = parent_node.left if value < parent_node.value else parent_node.right
     assert link_removed_leaf is None
@@ -287,7 +287,7 @@ def test_removed_leaf_parent_link_redirected_to_none(balanced_tree, value):
     (4, 1, -2),
 ])
 def test_node_with_one_child_replaced_by_its_child_after_removing(unbalanced_tree, child, node, parent):
-    parent_node = unbalanced_tree._get_parent_node(node, unbalanced_tree.root)
+    parent_node = unbalanced_tree._get_parent_node(node, unbalanced_tree._root)
     node_to_remove = unbalanced_tree._get_node(node, parent_node)
     child_node = unbalanced_tree._get_node(child, node_to_remove)
     unbalanced_tree.remove(node)
@@ -299,12 +299,12 @@ def test_node_with_one_child_replaced_by_its_child_after_removing(unbalanced_tre
     (5, 6)
 ])
 def test_node_with_two_children_replaced_by_successor_after_removing(balanced_tree, value, successor):
-    parent_node = balanced_tree._get_parent_node(value, balanced_tree.root)
+    parent_node = balanced_tree._get_parent_node(value, balanced_tree._root)
     balanced_tree.remove(value)
     if parent_node:
         redirected_link = parent_node.left if value < parent_node.value else parent_node.right
     else:
-        redirected_link = balanced_tree.root
+        redirected_link = balanced_tree._root
     assert redirected_link.value == successor
 
 

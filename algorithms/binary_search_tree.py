@@ -75,9 +75,14 @@ class BinarySearchTree:
     """
     def __init__(self, iterable=()):
         self._length = 0
-        self.root = None
+        self._root = None
 
         self._build_binary_search_tree(iterable)
+
+    @property
+    def root(self):
+        # Customer can get self._root value, but can't set it.
+        return self._root
 
     def __iter__(self):
         for value in self.inorder():
@@ -102,8 +107,8 @@ class BinarySearchTree:
                 node = BSTNode(values[mid])
                 self._length += 1
 
-                if not self.root:
-                    self.root = node
+                if not self._root:
+                    self._root = node
 
                 node.left = create_nodes(values[:mid])
                 node.right = create_nodes(values[mid + 1:])
@@ -125,7 +130,7 @@ class BinarySearchTree:
         Support method that is used in add/remove methods.
         """
         if not subtree_root or subtree_root.value == child_value:
-            # For subtree_root = self.root cases.
+            # For subtree_root = self._root cases.
             return None
 
         elif child_value < subtree_root.value and subtree_root.left and child_value != subtree_root.left.value:
@@ -147,8 +152,8 @@ class BinarySearchTree:
         # subtree_root argument can be None in 2 cases:
         # 1) On first (non-recursive) call if desired node is root (root's parent is None)
         # 2) In recursive call if desired node doesn't exist.
-        if subtree_root is None and self.root and value == self.root.value:
-            return self.root
+        if subtree_root is None and self._root and value == self._root.value:
+            return self._root
 
         if subtree_root and subtree_root.value < value:
             return self._get_node(value, subtree_root.right)
@@ -180,19 +185,19 @@ class BinarySearchTree:
         differ in length by no more than 1.
         """
         sorted_values = self.inorder()
-        self.root = None
+        self._root = None
         self._build_binary_search_tree(sorted_values)
 
     def exists(self, value):
         """Returns True if node with required value is in a tree."""
-        return bool(self._get_node(value, self.root))
+        return bool(self._get_node(value, self._root))
 
     def add(self, value):
         """Appends node with a given value to the tree."""
-        parent_node = self._get_parent_node(value, self.root)
+        parent_node = self._get_parent_node(value, self._root)
 
-        if not self.root:
-            self.root = BSTNode(value)
+        if not self._root:
+            self._root = BSTNode(value)
         elif parent_node and value < parent_node.value and not parent_node.left:
             parent_node.left = BSTNode(value)
         elif parent_node and value > parent_node.value and not parent_node.right:
@@ -211,7 +216,7 @@ class BinarySearchTree:
         3) If node to remove has two children, it's replaced by a node with successor value, founded in it's subtree.
         (Node with successor value will be moved to the place where node to remove existed before).
         """
-        parent_node = self._get_parent_node(value, self.root)
+        parent_node = self._get_parent_node(value, self._root)
         node_to_remove = self._get_node(value, parent_node)
 
         if not node_to_remove:
@@ -219,8 +224,8 @@ class BinarySearchTree:
 
         # First case.
         if node_to_remove.is_leaf():
-            if node_to_remove == self.root:
-                self.root = None
+            if node_to_remove == self._root:
+                self._root = None
             elif node_to_remove == parent_node.left:
                 parent_node.left = None
             else:
@@ -229,8 +234,8 @@ class BinarySearchTree:
         # Second case.
         elif node_to_remove.has_one_child_only():
             child_node = node_to_remove.left if node_to_remove.left else node_to_remove.right
-            if node_to_remove == self.root:
-                self.root = child_node
+            if node_to_remove == self._root:
+                self._root = child_node
             elif node_to_remove == parent_node.left:
                 parent_node.left = child_node
             else:
@@ -244,8 +249,8 @@ class BinarySearchTree:
             # but not from a tree, so need to compensate length's loss.
             self._length += 1
 
-            if node_to_remove == self.root:
-                self.root = successor_node
+            if node_to_remove == self._root:
+                self._root = successor_node
             elif node_to_remove == parent_node.left:
                 parent_node.left = successor_node
             else:
@@ -268,6 +273,6 @@ class BinarySearchTree:
                 if node.right:
                     _get_inordered_values(node.right)
 
-        _get_inordered_values(self.root)
+        _get_inordered_values(self._root)
 
         return inordered_values
