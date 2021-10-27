@@ -55,19 +55,17 @@ def merge_sort(array):
     def merge(array1, array2):
         i, j = 0, 0
         result = []
-        while i < len(array1) or j < len(array2):
-            if i >= len(array1):
-                result += array2[j:]
-                j = len(array2)
-            elif j >= len(array2):
-                result += array1[i:]
-                i = len(array1)
-            elif array1[i] > array2[j]:
-                result.append(array2[j])
-                j += 1
-            else:
+        while i < len(array1) and j < len(array2):
+            if array1[i] < array2[j]:
                 result.append(array1[i])
                 i += 1
+            else:
+                result.append(array2[j])
+                j += 1
+        if i >= len(array1):
+            result += array2[j:]
+        if j >= len(array2):
+            result += array1[i:]
         return result
 
     if len(array) <= 1:
