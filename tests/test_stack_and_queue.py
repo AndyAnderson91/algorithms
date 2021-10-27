@@ -37,11 +37,11 @@ def filled_queue():
 # Stack tests.
 
 def test_create_empty_stack():
-    assert Stack().top is None
+    assert Stack()._top is None
 
 
 def test_create_stack_with_values():
-    assert Stack(INITIAL_VALUES).top.value == INITIAL_VALUES[-1]
+    assert Stack(INITIAL_VALUES)._top.value == INITIAL_VALUES[-1]
 
 
 def test_stack_length(filled_stack):
@@ -62,7 +62,7 @@ def test_stack_repr(filled_stack):
 
 def test_last_pushed_to_stack_value_becomes_top(filled_stack):
     filled_stack.push('Last value')
-    assert filled_stack.top.value == 'Last value'
+    assert filled_stack._top.value == 'Last value'
 
 
 def test_push_value_to_stack_increase_length(filled_stack):
@@ -83,7 +83,7 @@ def test_pop_decrease_length_of_stack(filled_stack):
 def test_pop_the_only_element_from_stack_redirects_top_link_to_none(value):
     single_element_stack = Stack([value])
     single_element_stack.pop()
-    assert single_element_stack.top is None
+    assert single_element_stack._top is None
 
 
 def test_pop_from_empty_stack_raise_error(empty_stack):
@@ -118,11 +118,11 @@ def test_create_queue_with_values():
 
 
 def test_first_link_in_queue(filled_queue):
-    assert filled_queue.first.value == INITIAL_VALUES[0]
+    assert filled_queue._first.value == INITIAL_VALUES[0]
 
 
 def test_last_link_in_queue(filled_queue):
-    assert filled_queue.last.value == INITIAL_VALUES[-1]
+    assert filled_queue._last.value == INITIAL_VALUES[-1]
 
 
 def test_queue_repr(filled_queue):
@@ -133,12 +133,12 @@ def test_queue_repr(filled_queue):
 @pytest.mark.parametrize('value', INITIAL_VALUES)
 def test_first_enqueued_value_becomes_first(empty_queue, value):
     empty_queue.enqueue(value)
-    assert empty_queue.first.value == value
+    assert empty_queue._first.value == value
 
 
 def test_enqueued_value_always_becomes_last(filled_queue):
     filled_queue.enqueue('Last value')
-    assert filled_queue.last.value == 'Last value'
+    assert filled_queue._last.value == 'Last value'
 
 
 def test_enqueue_increase_length(filled_queue):
@@ -152,13 +152,13 @@ def test_dequeue_return_first_value(filled_queue):
 
 def test_first_link_redirect_to_next_value_after_dequeue(filled_queue):
     filled_queue.dequeue()
-    assert filled_queue.first.value == INITIAL_VALUES[1]
+    assert filled_queue._first.value == INITIAL_VALUES[1]
 
 
 def test_last_link_redirect_to_none_after_dequeue_the_only_value_in_queue(empty_queue):
     empty_queue.enqueue('The one and only')
     empty_queue.dequeue()
-    assert empty_queue.last is None
+    assert empty_queue._last is None
 
 
 def test_dequeue_decrease_length(filled_queue):

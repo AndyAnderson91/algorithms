@@ -123,7 +123,7 @@ def test_setitem_out_of_range_raise_error(filled_ll, out_of_range_index):
 
 def test_add_value_to_empty_ll_updates_first_link(empty_ll):
     empty_ll.add('First value')
-    assert empty_ll.first.value == 'First value'
+    assert empty_ll._first.value == 'First value'
 
 
 def test_add_value_to_filled_ll(filled_ll):
@@ -133,7 +133,7 @@ def test_add_value_to_filled_ll(filled_ll):
 
 def test_insert_value_in_empty_ll_updates_first_link(empty_ll):
     empty_ll.insert('First value', 0)
-    assert empty_ll.first.value == 'First value'
+    assert empty_ll._first.value == 'First value'
 
 
 @pytest.mark.parametrize('index', list(range(0, len(INITIAL_VALUES))))
@@ -165,24 +165,24 @@ def test_pop_with_out_of_range_index_raise_error(filled_ll, out_of_range_index):
 
 def test_first_link_switches_after_pop_first_value(filled_ll):
     filled_ll.pop()
-    assert filled_ll.first.value == INITIAL_VALUES[1]
+    assert filled_ll._first.value == INITIAL_VALUES[1]
 
 
 def test_last_link_switches_after_pop_last_value(filled_doubly_ll):
     filled_doubly_ll.pop(-1)
-    assert filled_doubly_ll.last.value == INITIAL_VALUES[-2]
+    assert filled_doubly_ll._last.value == INITIAL_VALUES[-2]
 
 
 def test_first_link_points_to_none_after_pop_the_only_value(empty_ll):
     empty_ll.add('The one and only')
     empty_ll.pop()
-    assert empty_ll.first is None
+    assert empty_ll._first is None
 
 
 def test_last_link_points_to_none_after_pop_the_only_value():
     doubly_ll = DoublyLinkedList(['The one and only'])
     doubly_ll.pop()
-    assert doubly_ll.last is None
+    assert doubly_ll._last is None
 
 
 @pytest.mark.parametrize('in_range_index', IN_RANGE_INDEXES)

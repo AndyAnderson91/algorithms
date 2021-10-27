@@ -72,7 +72,7 @@ class LLCommonMethods:
                 add_function(element)
 
     def __iter__(self):
-        cur_node = self.first
+        cur_node = self._first
         while cur_node:
             yield cur_node.value
             cur_node = cur_node.next
@@ -129,7 +129,7 @@ class SinglyLinkedList(LLCommonMethods, LLItemsAccessMethods):
     """
 
     def __init__(self, iterable=()):
-        self.first = None
+        self._first = None
         self._length = 0
 
         self._build_linked_list(iterable, self.add)
@@ -148,7 +148,7 @@ class SinglyLinkedList(LLCommonMethods, LLItemsAccessMethods):
         # Converts negative indexes to positive.
         index = index + self._length if index < 0 else index
 
-        cur_node = self.first
+        cur_node = self._first
         for i in range(index):
             cur_node = cur_node.next
 
@@ -156,7 +156,7 @@ class SinglyLinkedList(LLCommonMethods, LLItemsAccessMethods):
 
     def add(self, value):
         """Adds element in the front of the list. O(1) time complexity."""
-        self.first = SLLNode(value, self.first)
+        self._first = SLLNode(value, self._first)
         self._length += 1
 
     def insert(self, value, index):
@@ -178,7 +178,7 @@ class SinglyLinkedList(LLCommonMethods, LLItemsAccessMethods):
         new_node = SLLNode(value, next_node)
 
         if index == 0:
-            self.first = new_node
+            self._first = new_node
         else:
             prev_node = self._get_node(index - 1)
             prev_node.next = new_node
@@ -203,7 +203,7 @@ class SinglyLinkedList(LLCommonMethods, LLItemsAccessMethods):
         node_to_remove = self._get_node(index)
 
         if index == 0:
-            self.first = node_to_remove.next
+            self._first = node_to_remove.next
         else:
             prev_node = self._get_node(index - 1)
             prev_node.next = node_to_remove.next
@@ -222,8 +222,8 @@ class DoublyLinkedList(LLCommonMethods, LLItemsAccessMethods):
     Self methods: __init__, _get_node, add, insert, pop.
     """
     def __init__(self, iterable=()):
-        self.first = None
-        self.last = None
+        self._first = None
+        self._last = None
         self._length = 0
 
         self._build_linked_list(iterable, self.add)
@@ -245,11 +245,11 @@ class DoublyLinkedList(LLCommonMethods, LLItemsAccessMethods):
         index = index + self._length if index < 0 else index
 
         if index < self._length - index - 1:
-            cur_node = self.first
+            cur_node = self._first
             for i in range(index):
                 cur_node = cur_node.next
         else:
-            cur_node = self.last
+            cur_node = self._last
             for i in range(self._length - index - 1):
                 cur_node = cur_node.prev
 
@@ -257,12 +257,12 @@ class DoublyLinkedList(LLCommonMethods, LLItemsAccessMethods):
 
     def add(self, value):
         """Adds element in the front of the list. O(1) time complexity."""
-        next_node = self.first
-        self.first = DLLNode(value, None, next_node)
+        next_node = self._first
+        self._first = DLLNode(value, None, next_node)
         if next_node:
-            next_node.prev = self.first
+            next_node.prev = self._first
         else:
-            self.last = self.first
+            self._last = self._first
 
         self._length += 1
 
@@ -284,7 +284,7 @@ class DoublyLinkedList(LLCommonMethods, LLItemsAccessMethods):
         if index == self._length:
             prev_node = self._get_node(index-1)
             new_node = DLLNode(value, prev_node, None)
-            self.last = new_node
+            self._last = new_node
         else:
             next_node = self._get_node(index)
             prev_node = next_node.prev
@@ -294,7 +294,7 @@ class DoublyLinkedList(LLCommonMethods, LLItemsAccessMethods):
         if prev_node:
             prev_node.next = new_node
         else:
-            self.first = new_node
+            self._first = new_node
 
         self._length += 1
 
@@ -320,12 +320,12 @@ class DoublyLinkedList(LLCommonMethods, LLItemsAccessMethods):
         if node_to_remove.prev:
             node_to_remove.prev.next = node_to_remove.next
         else:
-            self.first = node_to_remove.next
+            self._first = node_to_remove.next
 
         if node_to_remove.next:
             node_to_remove.next.prev = node_to_remove.prev
         else:
-            self.last = node_to_remove.prev
+            self._last = node_to_remove.prev
 
         self._length -= 1
 
