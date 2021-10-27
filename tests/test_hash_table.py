@@ -48,14 +48,14 @@ def filled_table(request):
 def test_filled_table_with_collisions(filled_table_with_collisions):
     """Checks if this table has collisions."""
     # Filled cells number is less than items number.
-    filled_cells = [cell for cell in filled_table_with_collisions.array if cell is not None]
+    filled_cells = [cell for cell in filled_table_with_collisions._array if cell is not None]
     assert len(filled_cells) < len(INITIAL_ITEMS)
 
 
 def test_filled_table_without_collisions(filled_table_without_collisions):
     """Checks if this table doesn't have collisions."""
     # One item per array cell.
-    filled_cells = [cell for cell in filled_table_without_collisions.array if cell is not None]
+    filled_cells = [cell for cell in filled_table_without_collisions._array if cell is not None]
     assert len(filled_cells) == len(INITIAL_ITEMS)
 
 
@@ -73,7 +73,7 @@ def test_hashing_of_unhashable_keys_raise_error(empty_table, key):
 
 @pytest.mark.parametrize('key', INITIAL_KEYS)
 def test_hash_is_lower_than_capacity(empty_table, key):
-    assert empty_table._hash(key) < len(empty_table.array)
+    assert empty_table._hash(key) < len(empty_table._array)
 
 
 @pytest.mark.parametrize('non_iterable', [12, True, False, 0, 2.5, None])
@@ -196,15 +196,15 @@ def test_get_load_factor(items, capacity):
 
 
 def test_increase_capacity(filled_table):
-    # Current len(self.array) = 4 for table_with_collisions
+    # Current len(self._array) = 4 for table_with_collisions
     # and 5 for table_without_collisions.
     # Each table contains 3 items,
     # So in both tables load_factor is not more than 0.75.
     # After adding 1 item, both tables load_factor will exceed 0.75,
     # (border value by default), so capacity will be doubled.
-    initial_capacity = len(filled_table.array)
+    initial_capacity = len(filled_table._array)
     filled_table['four'] = 4
-    assert len(filled_table.array) == initial_capacity*2
+    assert len(filled_table._array) == initial_capacity*2
 
 
 def test_keys(filled_table):

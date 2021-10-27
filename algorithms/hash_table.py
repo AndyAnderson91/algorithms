@@ -28,18 +28,18 @@ KeyError: 'Key is not in the hash table.'
 
 Example on collision resolution:
 -------
->> h = HashTable((), 3)                   # h.array: [None, None, None]
+>> h = HashTable((), 3)                   # h._array: [None, None, None]
 # Select keys with equal hashes.
 >> h._hash('hello')
 2
 >> h._hash('world')
 2
->> h.add('hello', 1)                  # h.array: [None, None, «['hello', 1]»]
->> h.add('world', 2)                  # h.array: [None, None, «['world', 2] --> ['hello', 1]»]
+>> h.add('hello', 1)                  # h._array: [None, None, «['hello', 1]»]
+>> h.add('world', 2)                  # h._array: [None, None, «['world', 2] --> ['hello', 1]»]
 # Both items are in last array cell,
 # contained in singly linked list.
 # Capacity doubles if load_factor > 0.75.
->> h.add('bar', 3)                    # h.array: [None, None, None, None, «['bar', 3]», «['hello', 1] --> ['world', 2]»]
+>> h.add('bar', 3)                    # h._array: [None, None, None, None, «['bar', 3]», «['hello', 1] --> ['world', 2]»]
 """
 from algorithms.linked_lists import SinglyLinkedList
 
@@ -53,14 +53,14 @@ class HashTable:
     """
     def __init__(self, iterable=(), capacity=None, max_load_factor=0.75):
         self._length = 0
-        self.max_load_factor = max_load_factor
-        self.array = [None]*self._get_capacity(capacity, iterable)
+        self._max_load_factor = max_load_factor
+        self._array = [None]*self._get_capacity(capacity, iterable)
 
         self._build_hash_table(iterable)
 
     def __iter__(self):
         """Yields key on each iteration."""
-        for cell in self.array:
+        for cell in self._array:
             if cell is not None:
                 for item in cell:
                     yield item[0]
@@ -89,20 +89,20 @@ class HashTable:
         """
         index = self._hash(key)
 
-        if self.array[index]:
-            for item in self.array[index]:
+        if self._array[index]:
+            for item in self._array[index]:
                 if item[0] == key:
                     item[1] = value
                     return
 
-            self.array[index].add([key, value])
+            self._array[index].add([key, value])
 
         else:
-            self.array[index] = SinglyLinkedList(([key, value],))
+            self._array[index] = SinglyLinkedList(([key, value],))
 
         self._length += 1
 
-        if self._get_load_factor() > self.max_load_factor:
+        if self._get_load_factor() > self._max_load_factor:
             self._increase_capacity()
 
     def __repr__(self):
@@ -157,22 +157,22 @@ class HashTable:
             hash_value += abs(const - ord(symbol)) * (const**(max_pow - (i % max_pow)))
 
         # Makes hash value lower than table capacity.
-        return hash_value % len(self.array)
+        return hash_value % len(self._array)
 
     def _get_load_factor(self):
-        return len(self) / len(self.array)
+        return len(self) / len(self._array)
 
     def _increase_capacity(self):
         """
-        Doubles capacity of self.array by
+        Doubles capacity of self._array by
         creating temp hash table, copying all (key, value) pairs to it and
         replacing original table array with an increased temp array.
         """
-        temp_hash_table = HashTable((), len(self.array) * 2)
+        temp_hash_table = HashTable((), len(self._array) * 2)
         for key in self:
             temp_hash_table.add(key, self[key])
 
-        self.array = temp_hash_table.array
+        self._array = temp_hash_table._array
 
     def keys(self):
         """Returns list of keys."""
@@ -193,8 +193,8 @@ class HashTable:
         """
         index = self._hash(key)
 
-        if self.array[index]:
-            for item in self.array[index]:
+        if self._array[index]:
+            for item in self._array[index]:
                 if item[0] == key:
                     return item[1]
 
@@ -208,18 +208,18 @@ class HashTable:
         index = self._hash(key)
 
         # If True - Collision.
-        if self.array[index]:
-            for item in self.array[index]:
+        if self._array[index]:
+            for item in self._array[index]:
                 if item[0] == key:
                     raise KeyError('Item with this key already exists')
 
-            self.array[index].add([key, value])
+            self._array[index].add([key, value])
         else:
-            self.array[index] = SinglyLinkedList(([key, value],))
+            self._array[index] = SinglyLinkedList(([key, value],))
 
         self._length += 1
 
-        if self._get_load_factor() > self.max_load_factor:
+        if self._get_load_factor() > self._max_load_factor:
             self._increase_capacity()
 
     def pop(self, key):
@@ -229,14 +229,14 @@ class HashTable:
         """
         index = self._hash(key)
 
-        if self.array[index]:
-            for i, item in enumerate(self.array[index]):
+        if self._array[index]:
+            for i, item in enumerate(self._array[index]):
                 # index is needed to pop item from singly linked list.
                 if item[0] == key:
-                    value = self.array[index].pop(i)[1]
+                    value = self._array[index].pop(i)[1]
 
-                    if not self.array[index].first:
-                        self.array[index] = None
+                    if not self._array[index].first:
+                        self._array[index] = None
 
                     self._length -= 1
 
